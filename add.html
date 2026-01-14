@@ -2,146 +2,192 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Add Prescription</title>
+  <title>Add Rx • LTC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root{
       --bg:#f5f5f7;
-      --card-bg:#ffffff;
-      --text-main:#1d1d1f;
-      --text-sub:#6e6e73;
-      --accent-blue:#0071e3;
-      --accent-green:#22c55e;
-      --shadow-soft:0 18px 40px rgba(0,0,0,.08);
-      --shadow-mini:0 10px 26px rgba(0,0,0,.10);
+      --card:#ffffff;
+      --ink:#1d1d1f;
+      --muted:#6e6e73;
+      --blue:#0071e3;
+      --green:#22c55e;
+      --hair:rgba(0,0,0,.08);
       --radius:26px;
+      --shadow:0 18px 40px rgba(0,0,0,.08);
+      --shadow2:0 10px 26px rgba(0,0,0,.10);
     }
-    *{box-sizing:border-box;margin:0;padding:0}
+    *{box-sizing:border-box}
     body{
+      margin:0;
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
-      background:var(--bg); color:var(--text-main);
+      background:var(--bg);
+      color:var(--ink);
     }
-    a{color:var(--accent-blue);text-decoration:none}
-
-    .header{padding:28px 7vw 14px;display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
-    .logo{
-      font-size:clamp(1.8rem,2.6vw,2.6rem);
-      font-weight:800;
+    .wrap{max-width:980px;margin:0 auto;padding:24px 18px 40px}
+    .topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+    .brand{
+      font-weight:900;
+      font-size:clamp(1.8rem,2.5vw,2.6rem);
       background:linear-gradient(90deg,#0071e3,#34c759);
       -webkit-background-clip:text;background-clip:text;color:transparent;
+      letter-spacing:-.02em;
     }
-    .right{text-align:right;font-size:.95rem;line-height:1.25}
-    .right p:first-child{font-weight:700;margin-bottom:4px}
-    .right p:last-child{color:var(--text-sub)}
+    .sub{color:var(--muted);margin-top:4px}
+    .nav{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+      margin:12px 0 14px;
+    }
+    .navbtn{
+      display:flex;align-items:center;gap:10px;
+      border:1px solid var(--hair);
+      background:var(--card);
+      border-radius:999px;
+      padding:10px 14px;
+      box-shadow:var(--shadow2);
+      cursor:pointer;
+      font-weight:900;
+      color:var(--ink);
+      text-decoration:none;
+    }
+    .pill{
+      width:34px;height:34px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(0,113,227,.10);
+      color:var(--blue);
+      font-size:1.1rem;
+    }
 
-    main{padding:0 7vw 34px}
-    .headline{font-size:clamp(1.35rem,1.9vw,1.75rem);font-weight:700;margin:6px 0 14px}
-    .headline span{color:var(--accent-blue)}
-
-    .card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow-soft);overflow:hidden}
-    .top{padding:16px 18px;border-bottom:1px solid rgba(0,0,0,.06);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .sub{color:var(--text-sub);font-size:.95rem;margin-top:6px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--hair);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .head{
+      padding:16px 18px;
+      border-bottom:1px solid rgba(0,0,0,.08);
+      background:linear-gradient(180deg,rgba(0,113,227,.08),#fff);
+    }
+    .title{font-weight:1000;font-size:1.15rem}
+    .hint{color:var(--muted);margin-top:4px}
 
     .form{
-      padding:16px 18px 18px;
+      padding:16px 18px;
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:12px;
     }
     label{
-      font-size:.78rem;color:var(--text-sub);
-      text-transform:uppercase;letter-spacing:.08em;
-      display:block;margin-bottom:6px;font-weight:800;
+      display:block;
+      color:var(--muted);
+      font-weight:1000;
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:6px;
     }
     input,select,textarea{
       width:100%;
-      border:1px solid rgba(0,0,0,.12);
-      background:#fff;padding:11px 12px;border-radius:14px;outline:none;
+      border:1px solid var(--hair);
+      background:#fff;
+      padding:12px 14px;
+      border-radius:16px;
+      outline:none;
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
     }
     textarea{min-height:110px;resize:vertical}
     .full{grid-column:1 / -1}
 
-    .bottom{
+    .bot{
       padding:14px 18px;
-      border-top:1px solid rgba(0,0,0,.06);
-      display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center;
-      background:rgba(245,245,247,.45);
+      border-top:1px solid rgba(0,0,0,.08);
+      display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;
+      background:rgba(245,245,247,.6);
     }
-    .btns{display:flex;gap:10px;flex-wrap:wrap}
     .btn{
-      border:1px solid rgba(0,0,0,.10);background:#fff;
-      padding:11px 14px;border-radius:999px;cursor:pointer;
-      font-weight:900;box-shadow:var(--shadow-mini);
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      padding:12px 14px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:1000;
+      box-shadow:var(--shadow2);
+      display:flex;align-items:center;gap:10px;
     }
     .btn.primary{
       border-color:rgba(0,113,227,.22);
-      background:linear-gradient(180deg,rgba(0,113,227,.10),#fff);
+      background:linear-gradient(180deg,rgba(0,113,227,.12),#fff);
     }
-
     .msg{
-      font-size:.95rem;color:var(--text-sub);
-      padding:10px 12px;border-radius:14px;background:#fff;
       border:1px solid rgba(0,0,0,.08);
-      box-shadow:0 8px 22px rgba(0,0,0,.06);
-      max-width:760px;
+      background:#fff;
+      border-radius:16px;
+      padding:10px 12px;
+      box-shadow:0 12px 26px rgba(0,0,0,.10);
+      color:var(--muted);
+      max-width:660px;
     }
-    .ok{color:var(--accent-green);font-weight:900}
-    .warn{color:#b45309;font-weight:900}
+    .ok{color:var(--green);font-weight:1000}
+    .warn{color:#f59e0b;font-weight:1000}
 
-    @media (max-width:720px){
-      .header,main{padding-left:5vw;padding-right:5vw}
+    @media (max-width:760px){
       .form{grid-template-columns:1fr}
     }
   </style>
 </head>
 
 <body>
-  <div class="header">
-    <div class="logo">Add Prescription</div>
-    <div class="right">
-      <p>Writes to your queue sheet</p>
-      <p>Required: Medication + Timing</p>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <div class="brand">Add Rx</div>
+        <div class="sub">Writes a new row into <b>DispenseQueue</b>.</div>
+      </div>
+      <div class="sub" id="rt">—</div>
     </div>
-  </div>
 
-  <main>
-    <div class="headline"><span>New entry.</span> Add a prescription to dispense later.</div>
+    <div class="nav">
+      <a class="navbtn" href="index.html"><span class="pill">←</span> Back to Dispense</a>
+      <button class="navbtn" onclick="loadLookups()"><span class="pill">✨</span> Load suggestions</button>
+      <button class="navbtn" onclick="clearForm()"><span class="pill">🧹</span> Clear</button>
+    </div>
 
-    <section class="card">
-      <div class="top">
-        <div>
-          <div style="font-weight:900;font-size:1.05rem">New Rx</div>
-          <div class="sub">Due date defaults to today. Timing supports AM/PM/HS or BID/TID/QID.</div>
-        </div>
-        <a class="btn" href="index.html">← Back to Dispense</a>
+    <div class="card">
+      <div class="head">
+        <div class="title">New prescription</div>
+        <div class="hint">Timing supports AM/PM/HS/NIGHT or BID/TID/QID (or “AM,PM”). Due date defaults to today.</div>
       </div>
 
       <div class="form">
         <div>
-          <label>Resident / Room</label>
-          <input id="resident" placeholder="Room 101 / Resident name" />
+          <label>Resident (optional)</label>
+          <input id="resident" list="residentList" placeholder="Room 101 / Resident name" />
+          <datalist id="residentList"></datalist>
         </div>
 
         <div>
-          <label>Entered By</label>
+          <label>Entered by</label>
           <input id="enteredBy" placeholder="Nurse / staff name" />
         </div>
 
         <div class="full">
           <label>Medication (required)</label>
-          <input id="medication" placeholder="Drug name + strength + form" />
+          <input id="medication" list="medList" placeholder="Drug + strength + form" />
+          <datalist id="medList"></datalist>
         </div>
 
         <div class="full">
           <label>Instructions</label>
-          <textarea id="instructions" placeholder="Directions / notes (optional)"></textarea>
+          <textarea id="instructions" placeholder="Directions / notes"></textarea>
         </div>
 
         <div>
           <label>Timing (required)</label>
           <select id="timing">
-            <option value="">-- Select --</option>
+            <option value="">— Select —</option>
             <option>AM</option>
             <option>NOON</option>
             <option>PM</option>
@@ -157,37 +203,38 @@
         </div>
 
         <div>
-          <label>Due Date</label>
+          <label>Due date</label>
           <input id="dueDate" type="date" />
         </div>
       </div>
 
-      <div class="bottom">
-        <div class="btns">
-          <button class="btn primary" onclick="submitRx()">Add to Queue</button>
-          <button class="btn" onclick="clearForm()">Clear</button>
+      <div class="bot">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" onclick="submitRx()"><span class="pill">➕</span> Add to Queue</button>
+          <button class="btn" onclick="clearForm()"><span class="pill">🧹</span> Clear</button>
         </div>
-        <div class="msg" id="msg">—</div>
+        <div class="msg" id="msg">Ready.</div>
       </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
 <script>
-/*** SET THESE 2 VALUES ***/
+/*** YOU MUST SET THESE ***/
 const API_URL = "https://script.google.com/macros/s/AKfycbyoUMqa0N9B_6yTqA3bpKt4DfzUhamdvgkHw6TxaGYLUwWu72DLOnJ7sIEmNhoMSVCk/exec";
 const API_KEY = "CHANGE_ME_TO_SOMETHING_SECRET";
 
-function pad(n){ return String(n).padStart(2,"0"); }
-function todayISO(){
-  const d=new Date();
+const pad = n => String(n).padStart(2,"0");
+const todayISO = () => {
+  const d = new Date();
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-}
+};
 document.getElementById("dueDate").value = todayISO();
+document.getElementById("rt").textContent = `Today: ${todayISO()}`;
 
-function setMsg(text, cls=""){
-  const el=document.getElementById("msg");
-  el.className="msg "+cls;
-  el.textContent=text||"";
+function msg(text, cls=""){
+  const el = document.getElementById("msg");
+  el.className = "msg " + (cls||"");
+  el.textContent = text;
 }
 
 /*** JSONP ***/
@@ -214,24 +261,43 @@ function jsonp(url){
       delete window[cb];
       script.remove();
     }
-
     document.head.appendChild(script);
   });
 }
-
 function api(action, params={}){
   const q = new URLSearchParams({ action, key: API_KEY, ...params }).toString();
   return jsonp(`${API_URL}?${q}`);
 }
 
 function clearForm(){
-  document.getElementById("resident").value="";
-  document.getElementById("enteredBy").value="";
-  document.getElementById("medication").value="";
-  document.getElementById("instructions").value="";
-  document.getElementById("timing").value="";
-  document.getElementById("dueDate").value=todayISO();
-  setMsg("—");
+  document.getElementById("resident").value = "";
+  document.getElementById("enteredBy").value = "";
+  document.getElementById("medication").value = "";
+  document.getElementById("instructions").value = "";
+  document.getElementById("timing").value = "";
+  document.getElementById("dueDate").value = todayISO();
+  msg("Ready.");
+}
+
+async function loadLookups(){
+  try{
+    msg("Loading suggestions…");
+    const res = await api("lookups", {});
+    if (!res.ok) throw new Error(res.message || "Lookup failed");
+
+    const residents = res.data?.residents || [];
+    const meds = res.data?.medications || [];
+
+    document.getElementById("residentList").innerHTML =
+      residents.map(x=>`<option value="${String(x).replaceAll('"','&quot;')}"></option>`).join("");
+
+    document.getElementById("medList").innerHTML =
+      meds.map(x=>`<option value="${String(x).replaceAll('"','&quot;')}"></option>`).join("");
+
+    msg(`Loaded ${residents.length} residents + ${meds.length} medications.`, "ok");
+  } catch(e){
+    msg("Error: " + e.message, "warn");
+  }
 }
 
 async function submitRx(){
@@ -244,19 +310,22 @@ async function submitRx(){
     dueDate: document.getElementById("dueDate").value.trim()
   };
 
-  if (!payload.medication) return setMsg("Medication is required.", "warn");
-  if (!payload.timing) return setMsg("Timing is required.", "warn");
+  if (!payload.medication) return msg("Medication is required.", "warn");
+  if (!payload.timing) return msg("Timing is required.", "warn");
 
   try{
-    setMsg("Saving…");
+    msg("Saving…");
     const res = await api("addRx", payload);
     if (!res.ok) throw new Error(res.message || "Save failed");
-    setMsg(res.message || "Saved.", "ok");
+    msg(res.message || "Added.", "ok");
     clearForm();
-  }catch(e){
-    setMsg("Error: "+e.message, "warn");
+  } catch(e){
+    msg("Error: " + e.message, "warn");
   }
 }
+
+// Auto load suggestions once (optional)
+loadLookups();
 </script>
 </body>
 </html>

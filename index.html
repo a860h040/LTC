@@ -1,874 +1,413 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>LTC Medication Dispense</title>
+  <title>LTC Med Dispense</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root{
       --bg:#f5f5f7;
       --card:#ffffff;
-      --ink:#1d1d1f;
-      --muted:#6e6e73;
+      --ink:#111827;
+      --sub:#6b7280;
       --blue:#0071e3;
       --green:#22c55e;
       --red:#ef4444;
-      --amber:#f59e0b;
-      --radius:26px;
-      --shadow:0 18px 40px rgba(0,0,0,.08);
-      --shadow2:0 10px 26px rgba(0,0,0,.10);
-      --hair:rgba(0,0,0,.08);
+      --line:rgba(0,0,0,.08);
+      --shadow:0 18px 45px rgba(0,0,0,.10);
+      --r:26px;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto,Arial,sans-serif;
       background:var(--bg);
       color:var(--ink);
     }
-    .wrap{max-width:1200px;margin:0 auto;padding:24px 18px 80px}
-    .topbar{
-      display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
-      padding:6px 2px 16px;
+
+    /* header */
+    .header{
+      padding: 26px 6vw 14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
     }
     .brand{
-      font-weight:900;
-      font-size:clamp(1.8rem,2.5vw,2.6rem);
-      background:linear-gradient(90deg,#0071e3,#34c759);
-      -webkit-background-clip:text;background-clip:text;color:transparent;
-      letter-spacing:-.02em;
+      display:flex;align-items:center;gap:12px;
     }
-    .sub{
-      color:var(--muted);font-size:.95rem;line-height:1.25;margin-top:4px;
+    .brand h1{
+      margin:0;
+      font-size:clamp(1.6rem,2.3vw,2.2rem);
+      font-weight:800;
+      letter-spacing:-0.02em;
+      background:linear-gradient(90deg,#0071e3,#22c55e);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
     }
-    .rt{
+    .brand p{margin:2px 0 0;color:var(--sub);font-size:.95rem}
+
+    .headerRight{
       text-align:right;
-      color:var(--muted);
+      color:var(--sub);
       font-size:.92rem;
       line-height:1.3;
     }
 
-    /* Nav */
-    .nav{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      margin:10px 0 14px;
-    }
-    .navbtn{
-      display:flex;align-items:center;gap:10px;
-      border:1px solid var(--hair);
+    /* top tools */
+    .wrap{padding: 10px 6vw 26px;}
+    .panel{
       background:var(--card);
-      border-radius:999px;
-      padding:10px 14px;
-      box-shadow:var(--shadow2);
-      cursor:pointer;
-      font-weight:900;
-      color:var(--ink);
-      text-decoration:none;
-      transition:transform .12s ease;
-    }
-    .navbtn:active{transform:scale(.98)}
-    .pill{
-      width:34px;height:34px;border-radius:12px;
-      display:flex;align-items:center;justify-content:center;
-      background:rgba(0,113,227,.10);
-      color:var(--blue);
-      font-size:1.1rem;
+      border:1px solid var(--line);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      overflow:hidden;
     }
 
-    /* Slot chips */
-    .slotsCard{
-      background:var(--card); border:1px solid var(--hair);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:16px;
-      display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+    .topbar{
+      padding:14px 16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg,#fff, #fafafa);
     }
-    .slotRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .chip{
-      border:1px solid var(--hair);
-      background:#fff;
-      border-radius:999px;
-      padding:10px 12px;
-      display:flex;gap:10px;align-items:center;
+
+    .backBtn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:44px;height:44px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#111827;
+      box-shadow:0 10px 26px rgba(0,0,0,.10);
       cursor:pointer;
       transition:transform .12s ease, box-shadow .12s ease;
-      box-shadow:0 8px 18px rgba(0,0,0,.05);
-      user-select:none;
-      font-weight:900;
     }
-    .chip:active{transform:scale(.985)}
-    .chip.active{
-      border-color:rgba(0,113,227,.25);
-      background:linear-gradient(180deg,rgba(0,113,227,.10),#fff);
-      box-shadow:0 12px 22px rgba(0,113,227,.18);
-    }
-    .chip .tag{
-      font-size:.85rem;color:var(--muted);font-weight:800;
-    }
-    .badge{
-      min-width:30px;height:26px;border-radius:999px;
-      display:flex;align-items:center;justify-content:center;
-      padding:0 10px;
-      background:rgba(34,197,94,.12);
-      color:#0f7a3b;
-      font-weight:1000;
-      font-size:.9rem;
-    }
-    .chip .auto{
-      background:rgba(0,0,0,.06);
-      color:var(--ink);
-    }
+    .backBtn:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(0,0,0,.14)}
+    .backBtn:active{transform:scale(.98)}
+    .backBtn img{width:22px;height:22px;object-fit:contain}
 
-    /* Controls */
-    .controls{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      margin-top:12px;
-    }
-    input{
-      border:1px solid var(--hair);
+    .select, .input{
+      border:1px solid var(--line);
       background:#fff;
-      padding:12px 14px;
-      border-radius:16px;
+      height:44px;
+      padding:0 12px;
+      border-radius:14px;
+      font-size:.95rem;
       outline:none;
-      min-width:220px;
-      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      min-width:160px;
     }
-    input::placeholder{color:rgba(110,110,115,.9)}
-    .hint{color:var(--muted);font-size:.92rem}
+    .input{min-width:210px;flex:1}
+    .hint{
+      color:var(--sub);
+      font-size:.88rem;
+      margin-left:auto;
+      white-space:nowrap;
+    }
 
-    /* Resident cards */
-    .list{
-      margin-top:14px;
-      display:flex;flex-direction:column;gap:12px;
+    /* table */
+    table{
+      width:100%;
+      border-collapse:collapse;
     }
-    .residentCard{
-      background:var(--card);
-      border:1px solid var(--hair);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .residentHead{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:14px 16px;
-      border-bottom:1px solid rgba(0,0,0,.06);
-      cursor:pointer;
-      user-select:none;
-    }
-    .residentLeft{display:flex;align-items:center;gap:12px}
-    .residentIcon{
-      width:44px;height:44px;border-radius:16px;
-      display:flex;align-items:center;justify-content:center;
-      background:rgba(0,113,227,.10);
-      color:var(--blue);
-      font-size:1.2rem;
-      flex:0 0 auto;
-    }
-    .residentName{
-      font-weight:1000;
-      font-size:1.05rem;
-      letter-spacing:-.01em;
-    }
-    .residentMeta{color:var(--muted);font-size:.92rem;margin-top:2px}
-    .headBtns{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .miniBtn{
-      border:1px solid var(--hair);
-      background:#fff;
-      padding:10px 12px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:900;
-      box-shadow:0 8px 18px rgba(0,0,0,.06);
-    }
-    .miniBtn.primary{
-      border-color:rgba(0,113,227,.22);
-      background:linear-gradient(180deg,rgba(0,113,227,.10),#fff);
-    }
-    .caret{color:var(--muted);font-weight:900}
-
-    .rows{padding:10px 10px 14px}
-    table{width:100%;border-collapse:separate;border-spacing:0 10px}
-    td{padding:0}
-    .row{
-      border:1px solid rgba(0,0,0,.08);
-      border-radius:18px;
-      box-shadow:0 10px 22px rgba(0,0,0,.06);
-      background:#fff;
-      overflow:hidden;
-    }
-    .rowInner{
-      display:grid;
-      grid-template-columns: 54px 1.3fr 1.6fr 1fr 120px;
-      gap:0;
-      align-items:stretch;
-    }
-    .cell{padding:12px 12px;display:flex;flex-direction:column;justify-content:center}
-    .cell + .cell{border-left:1px solid rgba(0,0,0,.06)}
-    .chk{
-      display:flex;align-items:center;justify-content:center;
-    }
-    .cb{width:18px;height:18px;accent-color:var(--blue)}
-    .medName{font-weight:1000}
-    .small{color:var(--muted);font-size:.92rem;line-height:1.25;margin-top:3px}
-    .timing{font-weight:1000;color:var(--muted)}
-    .actBtn{
-      height:100%;
-      border:none;
-      cursor:pointer;
-      font-weight:1000;
-      color:var(--ink);
-      background:linear-gradient(180deg,rgba(34,197,94,.12),#fff);
-    }
-    .actBtn:hover{filter:brightness(.99)}
-    .actBtn:active{transform:scale(.99)}
-    .actBtnWrap{height:100%}
-
-    /* Bottom action bar */
-    .footerBar{
-      position:fixed;left:0;right:0;bottom:0;
-      background:rgba(245,245,247,.82);
-      backdrop-filter: blur(10px);
-      border-top:1px solid rgba(0,0,0,.08);
-      padding:10px 14px;
-    }
-    .footerInner{
-      max-width:1200px;margin:0 auto;
-      display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
-    }
-    .toast{
-      border:1px solid rgba(0,0,0,.08);
-      background:#fff;
-      border-radius:16px;
-      padding:10px 12px;
-      box-shadow:0 12px 26px rgba(0,0,0,.10);
-      color:var(--muted);
-      max-width:720px;
-    }
-    .ok{color:var(--green);font-weight:1000}
-    .warn{color:var(--amber);font-weight:1000}
-    .danger{color:var(--red);font-weight:1000}
-
-    .bigBtn{
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
+    th, td{
       padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      font-size:.95rem;
+      vertical-align:top;
+    }
+    th{
+      font-size:.78rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#64748b;
+      background:#fbfbfc;
+    }
+    td small{color:var(--sub)}
+    .chk{width:42px;text-align:center}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;
       border-radius:999px;
-      cursor:pointer;
-      font-weight:1000;
-      box-shadow:var(--shadow2);
-      display:flex;align-items:center;gap:10px;
-    }
-    .bigBtn.primary{
-      border-color:rgba(0,113,227,.22);
-      background:linear-gradient(180deg,rgba(0,113,227,.12),#fff);
-    }
-    .bigBtn:active{transform:scale(.985)}
-    .countPill{
-      min-width:34px;height:26px;border-radius:999px;
-      display:flex;align-items:center;justify-content:center;
-      padding:0 10px;
-      background:rgba(0,113,227,.10);
-      color:var(--blue);
-      font-weight:1000;
+      border:1px solid var(--line);
+      background:#f9fafb;
+      font-size:.85rem;
+      color:#374151;
     }
 
-    /* Modal */
-    .modalBack{
-      position:fixed;inset:0;
-      background:rgba(0,0,0,.30);
-      display:none;align-items:center;justify-content:center;
-      padding:18px;
-      z-index:50;
+    .footerbar{
+      padding:14px 16px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
     }
-    .modal{
-      width:min(820px, 96vw);
-      background:#fff;
-      border-radius:28px;
-      box-shadow:0 30px 80px rgba(0,0,0,.25);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,.35);
+    .btn{
+      border:none;
+      height:44px;
+      padding:0 14px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:650;
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
     }
-    .modalTop{
-      padding:16px 18px;
-      display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
-      border-bottom:1px solid rgba(0,0,0,.08);
-      background:linear-gradient(180deg,rgba(0,113,227,.08),#fff);
+    .btn:active{transform:scale(.99)}
+    .btn.primary{background:var(--blue);color:#fff;box-shadow:0 14px 30px rgba(0,113,227,.22)}
+    .btn.danger{background:#fff;color:#b91c1c;border:1px solid rgba(185,28,28,.35)}
+    .btn.ghost{background:#111827;color:#fff}
+    .status{
+      color:#b45309;
+      font-weight:700;
     }
-    .modalTitle{font-weight:1000;font-size:1.15rem}
-    .modalSub{color:var(--muted);font-size:.95rem;margin-top:4px}
-    .x{
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
-      width:40px;height:40px;border-radius:14px;
-      cursor:pointer;font-weight:1000;
-      box-shadow:0 10px 22px rgba(0,0,0,.10);
-    }
-    .modalBody{padding:14px 18px}
-    .selList{display:flex;flex-direction:column;gap:10px;max-height:45vh;overflow:auto;padding-right:4px}
-    .selItem{
-      border:1px solid rgba(0,0,0,.08);
+    .ok{color:#047857}
+    .err{color:#b91c1c}
+    .muted{color:var(--sub);font-weight:500}
+
+    /* floating add rx */
+    .fab{
+      position:fixed;right:16px;bottom:16px;
+      height:56px;
+      padding:0 18px;
       border-radius:18px;
-      padding:12px 12px;
-      box-shadow:0 10px 22px rgba(0,0,0,.06);
-    }
-    .selItem .t{font-weight:1000}
-    .selItem .s{color:var(--muted);margin-top:3px;font-size:.92rem;line-height:1.25}
-    .modalBot{
-      padding:14px 18px;
-      border-top:1px solid rgba(0,0,0,.08);
-      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-      background:rgba(245,245,247,.6);
-    }
-
-    /* Hold-to-confirm button */
-    .holdBtn{
-      position:relative;
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
-      padding:12px 16px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:1000;
-      box-shadow:0 10px 26px rgba(0,0,0,.10);
-      overflow:hidden;
-      user-select:none;
+      background:#111827;color:#fff;
+      border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 18px 45px rgba(0,0,0,.18);
       display:flex;align-items:center;gap:10px;
+      cursor:pointer;
+      text-decoration:none;
+      font-weight:750;
+      z-index:999;
+      transition:transform .12s ease, box-shadow .12s ease;
     }
-    .holdBtn.primary{
-      border-color:rgba(34,197,94,.30);
-      background:linear-gradient(180deg,rgba(34,197,94,.16),#fff);
+    .fab:hover{transform:translateY(-1px);box-shadow:0 24px 60px rgba(0,0,0,.22)}
+    .fab:active{transform:scale(.99)}
+    .fabIcon{
+      width:34px;height:34px;border-radius:14px;
+      background:rgba(255,255,255,.10);
+      display:flex;align-items:center;justify-content:center;
+      font-size:20px;
     }
-    .holdFill{
-      position:absolute;left:0;top:0;bottom:0;width:0%;
-      background:rgba(34,197,94,.22);
-      pointer-events:none;
-      transition:width .05s linear;
-    }
-    .holdTxt{position:relative;z-index:1}
-    .mutedLine{color:var(--muted);font-size:.92rem}
 
-    @media (max-width:900px){
-      .rowInner{grid-template-columns:54px 1.3fr 1.6fr 1fr 110px}
-    }
-    @media (max-width:740px){
-      input{min-width:160px;flex:1}
-      .rowInner{grid-template-columns:54px 1.2fr 1.4fr 1fr 98px}
+    @media (max-width:720px){
+      .hint{display:none}
+      .input{min-width: 100%}
+      .select{min-width: 48%}
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="topbar">
+  <header class="header">
+    <div class="brand">
       <div>
-        <div class="brand">LTC Dispense</div>
-        <div class="sub">Shows only meds due for the selected slot. Completed meds are archived automatically.</div>
+        <h1>LTC Dispense</h1>
+        <p>Shows only meds due for the selected time window.</p>
       </div>
-      <div class="rt" id="rt">—</div>
     </div>
-
-    <div class="nav">
-      <span class="navbtn" style="cursor:default">
-        <span class="pill">💊</span> Dispense
-      </span>
-      <a class="navbtn" href="add.html">
-        <span class="pill">➕</span> Add Rx
-      </a>
-      <button class="navbtn" onclick="hardRefresh()">
-        <span class="pill">🔄</span> Refresh
-      </button>
-      <button class="navbtn" onclick="clearSelection()">
-        <span class="pill">🧹</span> Clear
-      </button>
+    <div class="headerRight">
+      <div><strong>Tip:</strong> Select AM / PM / HS etc.</div>
+      <div>Then check items → Dispense Selected</div>
     </div>
+  </header>
 
-    <div class="slotsCard">
-      <div class="slotRow" id="slotRow"></div>
-      <div class="hint" id="slotHint">AUTO: AM 06–11 • NOON 12–13 • PM 14–17 • HS 18–23 • NIGHT 00–05</div>
-    </div>
-
-    <div class="controls">
-      <input id="nurse" placeholder="Nurse name (required for log)" />
-      <input id="search" placeholder="Search resident / medication / instructions..." oninput="render()" />
-      <span class="hint" id="stat">—</span>
-    </div>
-
-    <div class="list" id="list"></div>
-  </div>
-
-  <!-- Bottom bar -->
-  <div class="footerBar">
-    <div class="footerInner">
-      <div class="toast" id="toast">Ready.</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <button class="bigBtn" onclick="clearSelection()">Clear</button>
-        <button class="bigBtn primary" onclick="openConfirm()">
-          Dispense Selected <span class="countPill" id="selCount">0</span>
+  <main class="wrap">
+    <section class="panel">
+      <div class="topbar">
+        <!-- Back icon (your github image) -->
+        <button class="backBtn" id="goAdd" title="Add RX">
+          <img src="sigler-500-white.png" alt="Back icon" />
         </button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Confirm modal -->
-  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
-    <div class="modal">
-      <div class="modalTop">
-        <div>
-          <div class="modalTitle">Confirm Dispense</div>
-          <div class="modalSub" id="modalSub">—</div>
-        </div>
-        <button class="x" onclick="closeConfirm()">✕</button>
-      </div>
+        <select class="select" id="timeSlot">
+          <option value="AUTO">AUTO (based on current time)</option>
+          <option value="AM">AM</option>
+          <option value="NOON">NOON</option>
+          <option value="PM">PM</option>
+          <option value="HS">HS</option>
+          <option value="NIGHT">NIGHT</option>
+        </select>
 
-      <div class="modalBody">
-        <div class="selList" id="selList"></div>
+        <input class="input" id="nurseName" placeholder="Nurse name (for log)" />
+        <input class="input" id="search" placeholder="Search resident or medication..." />
+
+        <div class="hint">AUTO: AM (06–11) · NOON (12–13) · PM (14–17) · HS (18–23) · NIGHT (00–05)</div>
       </div>
 
-      <div class="modalBot">
-        <div class="mutedLine">Hold the green button to confirm (prevents mis-click).</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="bigBtn" onclick="closeConfirm()">Cancel</button>
-
-          <button class="holdBtn primary" id="holdBtn">
-            <span class="holdFill" id="holdFill"></span>
-            <span class="holdTxt">Hold to Dispense</span>
-          </button>
-        </div>
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th class="chk"><input type="checkbox" id="checkAll" /></th>
+              <th>Resident</th>
+              <th>Medication</th>
+              <th>Instructions</th>
+              <th>Timing</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="5" class="muted">Loading…</td></tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-  </div>
 
-<script>
-/*** YOU MUST SET THESE ***/
-const API_URL = "https://script.google.com/macros/s/AKfycbyoUMqa0N9B_6yTqA3bpKt4DfzUhamdvgkHw6TxaGYLUwWu72DLOnJ7sIEmNhoMSVCk/exec";
-const API_KEY = "CHANGE_ME_TO_SOMETHING_SECRET";
-
-/*** Slot config ***/
-const SLOTS = ["AUTO","AM","NOON","PM","HS","NIGHT"];
-const SLOT_EMOJI = { AUTO:"🪄", AM:"🌅", NOON:"🕛", PM:"🌇", HS:"🌙", NIGHT:"🌌" };
-
-/*** State ***/
-let modeSlot = "AUTO";          // user selection (AUTO or fixed)
-let effectiveSlot = "AM";       // computed slot when AUTO
-let counts = { AM:0, NOON:0, PM:0, HS:0, NIGHT:0 };
-let items = [];                 // meds due for effective slot
-let selected = new Set();       // selected IDs
-let expandedResidents = new Set(); // expanded accordions
-
-/*** Utils ***/
-const pad = n => String(n).padStart(2,"0");
-const todayISO = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-};
-const nowStr = () => {
-  const d = new Date();
-  return `${todayISO()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-};
-function detectSlot(d){
-  const h = d.getHours();
-  if (h>=6 && h<=11) return "AM";
-  if (h>=12 && h<=13) return "NOON";
-  if (h>=14 && h<=17) return "PM";
-  if (h>=18 && h<=23) return "HS";
-  return "NIGHT";
-}
-function esc(s){
-  return String(s||"")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-}
-function toast(msg, cls=""){
-  const t = document.getElementById("toast");
-  t.className = "toast " + (cls||"");
-  t.textContent = msg;
-}
-function updateRT(){
-  document.getElementById("rt").textContent = `Now: ${nowStr()} • Slot: ${effectiveSlot}`;
-}
-setInterval(updateRT, 1000);
-
-/*** JSONP (bypasses CORS) ***/
-function jsonp(url){
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Math.random().toString(36).slice(2);
-    const sep = url.includes("?") ? "&" : "?";
-    const full = url + sep + "callback=" + cb;
-
-    const script = document.createElement("script");
-    script.src = full;
-    script.async = true;
-
-    const timeout = setTimeout(() => {
-      cleanup();
-      reject(new Error("API timeout"));
-    }, 20000);
-
-    window[cb] = (data) => { cleanup(); resolve(data); };
-    script.onerror = () => { cleanup(); reject(new Error("API load error")); };
-
-    function cleanup(){
-      clearTimeout(timeout);
-      delete window[cb];
-      script.remove();
-    }
-    document.head.appendChild(script);
-  });
-}
-function api(action, params={}){
-  const q = new URLSearchParams({ action, key: API_KEY, ...params }).toString();
-  return jsonp(`${API_URL}?${q}`);
-}
-
-/*** UI: slot chips ***/
-function slotChipHTML(slot){
-  const active = (modeSlot===slot) ? "active" : "";
-  const count = (slot==="AUTO") ? (counts[effectiveSlot] ?? 0) : (counts[slot] ?? 0);
-  const badgeClass = (slot==="AUTO") ? "badge auto" : "badge";
-  return `
-    <div class="chip ${active}" data-slot="${slot}">
-      <div style="font-size:1.05rem">${SLOT_EMOJI[slot] || "⏱️"}</div>
-      <div style="display:flex;flex-direction:column;line-height:1.05">
-        <div>${slot}</div>
-        <div class="tag">${slot==="AUTO" ? "auto picks now" : "due now"}</div>
+      <div class="footerbar">
+        <button class="btn primary" id="dispenseBtn">Dispense Selected</button>
+        <button class="btn danger" id="clearBtn">Clear Selection</button>
+        <span class="status" id="status"></span>
       </div>
-      <div class="${badgeClass}">${count}</div>
-    </div>
-  `;
-}
-function renderSlots(){
-  const row = document.getElementById("slotRow");
-  row.innerHTML = SLOTS.map(slotChipHTML).join("");
-  row.querySelectorAll(".chip").forEach(ch => {
-    ch.addEventListener("click", () => {
-      modeSlot = ch.dataset.slot;
-      selected.clear();
-      renderSlots();
-      refresh();
+    </section>
+  </main>
+
+  <a class="fab" href="add.html" title="Add RX">
+    <span class="fabIcon">＋</span>
+    Add RX
+  </a>
+
+  <script>
+    // ✅ Put your Web App URL here (Google Apps Script deployed as Web App)
+    // If you already have a GAS URL, paste it below.
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxHqruOM0OncDT-ZGT7HqhkjklKU0rpg2-BpBiqk4iDsGD5EfxFcM-fd1-n2Y2vcUU/exec"; // <-- paste like: https://script.google.com/macros/s/XXXX/exec
+
+    // Spreadsheet ID you gave
+    const SPREADSHEET_ID = "17FXMcaJ2un_rhKKlYZbJR6yd2BDgISIM2k0z6iC9_O4";
+
+    // expected sheet columns:
+    // A: Resident | B: Medication | C: Instructions | D: TimingSlot (AM/PM/HS/NOON/NIGHT etc.)
+    // Row is removed when dispensed
+    const SHEET_NAME = "Dispense";
+
+    const elRows = document.getElementById("rows");
+    const elSlot = document.getElementById("timeSlot");
+    const elSearch = document.getElementById("search");
+    const elNurse = document.getElementById("nurseName");
+    const elStatus = document.getElementById("status");
+    const elCheckAll = document.getElementById("checkAll");
+
+    document.getElementById("goAdd").addEventListener("click", () => {
+      window.location.href = "add.html";
     });
-  });
-}
 
-/*** Group by resident ***/
-function groupByResident(list){
-  const map = new Map();
-  list.forEach(it => {
-    const key = (it.resident || "Unknown").trim() || "Unknown";
-    if (!map.has(key)) map.set(key, []);
-    map.get(key).push(it);
-  });
-  // Sort meds inside resident
-  for (const [k, arr] of map.entries()){
-    arr.sort((a,b)=>(a.medication||"").localeCompare(b.medication||""));
-  }
-  return Array.from(map.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
-}
-
-function selectedCount(){
-  return selected.size;
-}
-function updateSelectedPill(){
-  document.getElementById("selCount").textContent = String(selectedCount());
-}
-
-function setAllForResident(resName, on){
-  const meds = items.filter(x => (x.resident||"").trim() === resName);
-  meds.forEach(m => {
-    if (on) selected.add(m.id);
-    else selected.delete(m.id);
-  });
-  render(); // re-render to sync checkboxes
-}
-
-function toggleResidentExpand(resName){
-  if (expandedResidents.has(resName)) expandedResidents.delete(resName);
-  else expandedResidents.add(resName);
-  render();
-}
-
-function render(){
-  const q = (document.getElementById("search").value||"").toLowerCase().trim();
-
-  const filtered = !q ? items : items.filter(it => {
-    return (it.resident||"").toLowerCase().includes(q) ||
-           (it.medication||"").toLowerCase().includes(q) ||
-           (it.instructions||"").toLowerCase().includes(q) ||
-           (it.timing||"").toLowerCase().includes(q);
-  });
-
-  const groups = groupByResident(filtered);
-
-  const listEl = document.getElementById("list");
-  if (!filtered.length){
-    listEl.innerHTML = `
-      <div class="residentCard">
-        <div class="residentHead" style="cursor:default">
-          <div class="residentLeft">
-            <div class="residentIcon">✅</div>
-            <div>
-              <div class="residentName">No meds due</div>
-              <div class="residentMeta">Nothing scheduled for ${effectiveSlot} today.</div>
-            </div>
-          </div>
-        </div>
-      </div>`;
-    document.getElementById("stat").textContent = `0 due • ${effectiveSlot} • ${todayISO()}`;
-    updateSelectedPill();
-    return;
-  }
-
-  listEl.innerHTML = groups.map(([resName, meds]) => {
-    const isOpen = expandedResidents.has(resName);
-    const selInRes = meds.filter(m=>selected.has(m.id)).length;
-    const headMeta = `${meds.length} due • ${selInRes} selected`;
-
-    const rowsHTML = meds.map(m => {
-      const checked = selected.has(m.id) ? "checked" : "";
-      return `
-        <tr><td class="row">
-          <div class="rowInner" data-id="${esc(m.id)}">
-            <div class="cell chk">
-              <input class="cb" type="checkbox" data-id="${esc(m.id)}" ${checked}>
-            </div>
-            <div class="cell">
-              <div class="medName">${esc(m.medication)}</div>
-              <div class="small">${esc(m.instructions || "—")}</div>
-            </div>
-            <div class="cell">
-              <div class="medName">Timing</div>
-              <div class="small">${esc(m.timing || "—")}</div>
-            </div>
-            <div class="cell">
-              <div class="medName">Due date</div>
-              <div class="small">${esc(m.dueDate || todayISO())}</div>
-            </div>
-            <div class="actBtnWrap">
-              <button class="actBtn" data-one="${esc(m.id)}">Dispense</button>
-            </div>
-          </div>
-        </td></tr>
-      `;
-    }).join("");
-
-    return `
-      <div class="residentCard">
-        <div class="residentHead" data-res="${esc(resName)}">
-          <div class="residentLeft">
-            <div class="residentIcon">👤</div>
-            <div>
-              <div class="residentName">${esc(resName)}</div>
-              <div class="residentMeta">${esc(headMeta)}</div>
-            </div>
-          </div>
-          <div class="headBtns">
-            <button class="miniBtn" data-selall="${esc(resName)}">Select all</button>
-            <button class="miniBtn" data-unsel="${esc(resName)}">Unselect</button>
-            <button class="miniBtn primary" data-open="${esc(resName)}">${isOpen ? "Hide" : "Show"}</button>
-            <div class="caret">${isOpen ? "▾" : "▸"}</div>
-          </div>
-        </div>
-        ${isOpen ? `<div class="rows"><table>${rowsHTML}</table></div>` : ""}
-      </div>
-    `;
-  }).join("");
-
-  // Hook up buttons
-  listEl.querySelectorAll("[data-open]").forEach(btn=>{
-    btn.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      toggleResidentExpand(btn.dataset.open);
-    });
-  });
-  listEl.querySelectorAll(".residentHead").forEach(head=>{
-    head.addEventListener("click",(e)=>{
-      const res = head.dataset.res;
-      if (!res) return;
-      toggleResidentExpand(res);
-    });
-  });
-  listEl.querySelectorAll("[data-selall]").forEach(btn=>{
-    btn.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      setAllForResident(btn.dataset.selall, true);
-    });
-  });
-  listEl.querySelectorAll("[data-unsel]").forEach(btn=>{
-    btn.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      setAllForResident(btn.dataset.unsel, false);
-    });
-  });
-
-  // Checkbox changes
-  listEl.querySelectorAll(".cb").forEach(cb=>{
-    cb.addEventListener("change",()=>{
-      const id = cb.dataset.id;
-      if (!id) return;
-      if (cb.checked) selected.add(id); else selected.delete(id);
-      updateSelectedPill();
-    });
-  });
-
-  // One-dispense buttons
-  listEl.querySelectorAll("[data-one]").forEach(b=>{
-    b.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      selected.clear();
-      selected.add(b.dataset.one);
-      updateSelectedPill();
-      openConfirm();
-    });
-  });
-
-  document.getElementById("stat").textContent =
-    `${filtered.length} due • ${effectiveSlot} • ${todayISO()} • Residents: ${groups.length}`;
-
-  updateSelectedPill();
-}
-
-/*** Data loading ***/
-async function refresh(){
-  try{
-    effectiveSlot = (modeSlot==="AUTO") ? detectSlot(new Date()) : modeSlot;
-    updateRT();
-    toast("Loading…");
-
-    // counts (fast summary)
-    const cRes = await api("getCounts", { date: todayISO() });
-    if (cRes.ok && cRes.data) counts = cRes.data;
-
-    renderSlots();
-
-    // meds for slot
-    const mRes = await api("getMeds", { slot: effectiveSlot, date: todayISO() });
-    if (!mRes.ok) throw new Error(mRes.message || "API error");
-    items = Array.isArray(mRes.data) ? mRes.data : [];
-
-    // Auto-expand residents if only a few
-    const groupCount = groupByResident(items).length;
-    if (expandedResidents.size === 0 && groupCount <= 4) {
-      groupByResident(items).forEach(([r]) => expandedResidents.add(r));
+    function autoSlot(){
+      const h = new Date().getHours();
+      if (h >= 6 && h <= 11) return "AM";
+      if (h >= 12 && h <= 13) return "NOON";
+      if (h >= 14 && h <= 17) return "PM";
+      if (h >= 18 && h <= 23) return "HS";
+      return "NIGHT";
     }
 
-    render();
-    toast(`Loaded ${items.length} due item(s) for ${effectiveSlot}.`, items.length ? "ok" : "warn");
-  } catch(e){
-    toast("Error: " + e.message, "warn");
-  }
-}
+    let allData = []; // {rowIndex, resident, med, instr, timing}
 
-function hardRefresh(){
-  // keep expanded residents, but clear selection
-  selected.clear();
-  updateSelectedPill();
-  refresh();
-}
-
-function clearSelection(){
-  selected.clear();
-  updateSelectedPill();
-  toast("Selection cleared.");
-}
-
-/*** Confirm modal + hold-to-dispense ***/
-function openConfirm(){
-  if (selected.size === 0) return toast("Select at least 1 medication.", "warn");
-  const nurse = (document.getElementById("nurse").value||"").trim();
-  if (!nurse) return toast("Enter nurse name first.", "warn");
-
-  const chosen = items.filter(x => selected.has(x.id));
-  if (!chosen.length) return toast("Selected items are not in the current slot list (refresh).", "warn");
-
-  document.getElementById("modalSub").textContent =
-    `Slot: ${effectiveSlot} • Nurse: ${nurse} • Items: ${chosen.length}`;
-
-  document.getElementById("selList").innerHTML = chosen.map(x => `
-    <div class="selItem">
-      <div class="t">${esc(x.resident)} — ${esc(x.medication)}</div>
-      <div class="s">${esc(x.instructions || "—")}</div>
-      <div class="s">Timing: ${esc(x.timing || "—")}</div>
-    </div>
-  `).join("");
-
-  document.getElementById("modalBack").style.display = "flex";
-}
-
-function closeConfirm(){
-  document.getElementById("modalBack").style.display = "none";
-  resetHold();
-}
-
-let holdTimer = null;
-let holdStart = 0;
-const HOLD_MS = 900;
-
-function resetHold(){
-  const fill = document.getElementById("holdFill");
-  fill.style.width = "0%";
-  if (holdTimer) { clearInterval(holdTimer); holdTimer = null; }
-  holdStart = 0;
-}
-
-async function runDispense(){
-  const nurse = (document.getElementById("nurse").value||"").trim();
-  const ids = Array.from(selected);
-
-  toast("Dispensing…");
-  try{
-    const res = await api("dispense", { ids: ids.join(","), nurse, slot: effectiveSlot });
-    if (!res.ok) throw new Error(res.message || "Dispense failed");
-    closeConfirm();
-    toast(res.message || "Dispensed.", "ok");
-    selected.clear();
-    updateSelectedPill();
-    await refresh();
-  } catch(e){
-    toast("Error: " + e.message, "warn");
-  }
-}
-
-// Hold-to-confirm behavior
-const holdBtn = document.getElementById("holdBtn");
-holdBtn.addEventListener("pointerdown", () => {
-  resetHold();
-  holdStart = performance.now();
-
-  holdTimer = setInterval(() => {
-    const elapsed = performance.now() - holdStart;
-    const pct = Math.min(100, (elapsed / HOLD_MS) * 100);
-    document.getElementById("holdFill").style.width = pct + "%";
-    if (elapsed >= HOLD_MS) {
-      resetHold();
-      runDispense();
+    function setStatus(msg, cls=""){
+      elStatus.className = "status " + cls;
+      elStatus.textContent = msg || "";
     }
-  }, 20);
-});
-["pointerup","pointerleave","pointercancel"].forEach(evt=>{
-  holdBtn.addEventListener(evt, () => resetHold());
-});
 
-// Close modal on backdrop click
-document.getElementById("modalBack").addEventListener("click",(e)=>{
-  if (e.target.id === "modalBack") closeConfirm();
-});
+    function filterAndRender(){
+      const slot = (elSlot.value === "AUTO") ? autoSlot() : elSlot.value;
+      const q = elSearch.value.trim().toLowerCase();
 
-/*** Auto slot switching every minute when AUTO ***/
-setInterval(()=>{
-  if (modeSlot !== "AUTO") return;
-  const newSlot = detectSlot(new Date());
-  if (newSlot !== effectiveSlot) {
-    effectiveSlot = newSlot;
-    selected.clear();
-    toast(`Auto-switched to ${effectiveSlot}. Refreshing…`, "ok");
-    refresh();
-  }
-}, 60000);
+      const show = allData.filter(x=>{
+        const matchSlot = (String(x.timing || "").toUpperCase().includes(slot));
+        const matchQ = !q || (x.resident.toLowerCase().includes(q) || x.med.toLowerCase().includes(q));
+        return matchSlot && matchQ;
+      });
 
-// Initial
-effectiveSlot = detectSlot(new Date());
-renderSlots();
-refresh();
-</script>
+      if (!show.length){
+        elRows.innerHTML = `<tr><td colspan="5" class="muted">No meds due for this time slot.</td></tr>`;
+        return;
+      }
+
+      elRows.innerHTML = show.map(item => `
+        <tr>
+          <td class="chk">
+            <input type="checkbox" class="rowChk" data-row="${item.rowIndex}">
+          </td>
+          <td>${escapeHtml(item.resident)}</td>
+          <td><strong>${escapeHtml(item.med)}</strong></td>
+          <td><small>${escapeHtml(item.instr)}</small></td>
+          <td><span class="pill">🕒 ${escapeHtml(item.timing)}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+      }[m]));
+    }
+
+    async function api(action, payload){
+      // If you host on GitHub, you use fetch to WEB_APP_URL
+      if (!WEB_APP_URL){
+        throw new Error("WEB_APP_URL is empty. Paste your deployed Google Apps Script Web App URL.");
+      }
+      const res = await fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ action, spreadsheetId: SPREADSHEET_ID, sheetName: SHEET_NAME, ...payload })
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Unknown error");
+      return data;
+    }
+
+    async function load(){
+      try{
+        setStatus("Loading…");
+        const out = await api("list_due", {});
+        allData = out.items || [];
+        filterAndRender();
+        setStatus(`Loaded ${allData.length} items`, "ok");
+      }catch(e){
+        setStatus("Error: " + e.message, "err");
+        elRows.innerHTML = `<tr><td colspan="5" class="err">Error: ${escapeHtml(e.message)}</td></tr>`;
+      }
+    }
+
+    document.getElementById("clearBtn").addEventListener("click", ()=>{
+      document.querySelectorAll(".rowChk").forEach(ch=>ch.checked=false);
+      elCheckAll.checked=false;
+      setStatus("Selection cleared", "muted");
+    });
+
+    elCheckAll.addEventListener("change", ()=>{
+      const v = elCheckAll.checked;
+      document.querySelectorAll(".rowChk").forEach(ch=>ch.checked=v);
+    });
+
+    document.getElementById("dispenseBtn").addEventListener("click", async ()=>{
+      try{
+        const nurse = elNurse.value.trim();
+        if (!nurse) { setStatus("Enter nurse name first.", "err"); return; }
+
+        const checked = Array.from(document.querySelectorAll(".rowChk:checked"))
+          .map(ch => Number(ch.dataset.row))
+          .filter(n => Number.isFinite(n));
+
+        if (!checked.length){ setStatus("Select at least one medication.", "err"); return; }
+
+        setStatus("Dispensing…");
+        await api("dispense", { nurse, rowIndexes: checked });
+
+        // remove from local array + re-render
+        allData = allData.filter(x => !checked.includes(x.rowIndex));
+        filterAndRender();
+        setStatus("Dispensed and removed from sheet ✅", "ok");
+      }catch(e){
+        setStatus("Error: " + e.message, "err");
+      }
+    });
+
+    elSlot.addEventListener("change", filterAndRender);
+    elSearch.addEventListener("input", filterAndRender);
+
+    load();
+  </script>
 </body>
 </html>

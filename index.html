@@ -2,123 +2,191 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>LTC Medication Dispense</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>LTC Medication Dispense</title>
 
   <style>
     :root{
-      --bg:#f5f5f7;
-      --card:#ffffff;
-      --ink:#1d1d1f;
-      --muted:#6e6e73;
       --blue:#0071e3;
       --green:#22c55e;
       --red:#ef4444;
       --amber:#f59e0b;
+
+      --bg:#f5f5f7;
+      --card:#ffffff;
+      --ink:#1d1d1f;
+      --muted:#6e6e73;
+      --hair:rgba(0,0,0,.10);
+      --hair2:rgba(0,0,0,.06);
+
       --radius:26px;
-      --shadow:0 18px 40px rgba(0,0,0,.08);
+      --radius2:18px;
+      --shadow:0 18px 50px rgba(0,0,0,.10);
       --shadow2:0 10px 26px rgba(0,0,0,.10);
-      --hair:rgba(0,0,0,.08);
+      --shadow3:0 8px 18px rgba(0,0,0,.06);
+
+      --ease:cubic-bezier(.2,.8,.2,1);
+      --max:1200px;
     }
+
+    [data-theme="dark"]{
+      --bg:#0b0f1a;
+      --card:#121829;
+      --ink:#e9eefc;
+      --muted:#a5b0c9;
+      --hair:rgba(255,255,255,.12);
+      --hair2:rgba(255,255,255,.08);
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --shadow2:0 10px 30px rgba(0,0,0,.45);
+      --shadow3:0 8px 18px rgba(0,0,0,.35);
+    }
+
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
-      background:var(--bg);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 700px at 12% -10%, rgba(0,113,227,.18), transparent 55%),
+        radial-gradient(900px 600px at 95% 0%, rgba(34,197,94,.14), transparent 55%),
+        radial-gradient(900px 700px at 50% 120%, rgba(245,158,11,.10), transparent 60%),
+        var(--bg);
       color:var(--ink);
+      overflow-x:hidden;
     }
-    .wrap{max-width:1200px;margin:0 auto;padding:24px 18px 80px}
+
+    .noise{
+      pointer-events:none;
+      position:fixed; inset:0;
+      opacity:.08;
+      mix-blend-mode:overlay;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      background-size:240px 240px;
+    }
+
+    .wrap{max-width:var(--max);margin:0 auto;padding:22px 16px 110px}
+
+    /* Sticky glass header */
+    .top{
+      position:sticky; top:0; z-index:25;
+      padding:14px 0 10px;
+      backdrop-filter: blur(12px);
+      background:linear-gradient(180deg, rgba(245,245,247,.80), rgba(245,245,247,.30));
+      border-bottom:1px solid var(--hair2);
+    }
+    [data-theme="dark"] .top{
+      background:linear-gradient(180deg, rgba(11,15,26,.72), rgba(11,15,26,.30));
+    }
+
     .topbar{
       display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
-      padding:6px 2px 16px;
+      padding:0 0 10px;
     }
     .brand{
-      font-weight:900;
-      font-size:clamp(1.8rem,2.5vw,2.6rem);
-      background:linear-gradient(90deg,#0071e3,#34c759);
+      font-weight:950;
+      font-size:clamp(1.65rem,2.5vw,2.6rem);
+      background:linear-gradient(90deg, var(--blue), #34c759, #60a5fa);
       -webkit-background-clip:text;background-clip:text;color:transparent;
-      letter-spacing:-.02em;
+      letter-spacing:-.03em;
+      line-height:1.05;
     }
     .sub{
-      color:var(--muted);font-size:.95rem;line-height:1.25;margin-top:4px;
+      color:var(--muted);font-size:.95rem;line-height:1.25;margin-top:6px;
     }
     .rt{
       text-align:right;
       color:var(--muted);
       font-size:.92rem;
       line-height:1.3;
+      padding-top:6px;
+      white-space:nowrap;
     }
 
     /* Nav */
-    .nav{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      margin:10px 0 14px;
-    }
+    .nav{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 12px}
     .navbtn{
       display:flex;align-items:center;gap:10px;
       border:1px solid var(--hair);
-      background:var(--card);
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.70));
+      color:var(--ink);
       border-radius:999px;
       padding:10px 14px;
-      box-shadow:var(--shadow2);
+      box-shadow:var(--shadow3);
       cursor:pointer;
-      font-weight:900;
-      color:var(--ink);
+      font-weight:950;
       text-decoration:none;
-      transition:transform .12s ease;
+      transition:transform .12s var(--ease), filter .12s var(--ease);
+      user-select:none;
     }
-    .navbtn:active{transform:scale(.98)}
+    [data-theme="dark"] .navbtn{
+      background:linear-gradient(180deg, rgba(18,24,41,.92), rgba(18,24,41,.72));
+    }
+    .navbtn:active{transform:scale(.985)}
+    .navbtn:hover{filter:brightness(1.02)}
     .pill{
       width:34px;height:34px;border-radius:12px;
       display:flex;align-items:center;justify-content:center;
-      background:rgba(0,113,227,.10);
+      background:rgba(0,113,227,.12);
       color:var(--blue);
       font-size:1.1rem;
+      flex:0 0 auto;
     }
 
-    /* Slot chips */
+    .navRight{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+
+    /* Slot chips card */
     .slotsCard{
-      background:var(--card); border:1px solid var(--hair);
+      background:rgba(255,255,255,.86);
+      border:1px solid var(--hair2);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
-      padding:16px;
+      padding:14px;
       display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
     }
+    [data-theme="dark"] .slotsCard{background:rgba(18,24,41,.80)}
     .slotRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .chip{
-      border:1px solid var(--hair);
-      background:#fff;
+      border:1px solid var(--hair2);
+      background:rgba(255,255,255,.80);
       border-radius:999px;
       padding:10px 12px;
       display:flex;gap:10px;align-items:center;
       cursor:pointer;
-      transition:transform .12s ease, box-shadow .12s ease;
-      box-shadow:0 8px 18px rgba(0,0,0,.05);
+      transition:transform .12s var(--ease), box-shadow .12s var(--ease), filter .12s var(--ease);
+      box-shadow:var(--shadow3);
       user-select:none;
-      font-weight:900;
+      font-weight:950;
     }
+    [data-theme="dark"] .chip{background:rgba(10,14,24,.45)}
+    .chip:hover{filter:brightness(1.02)}
     .chip:active{transform:scale(.985)}
     .chip.active{
-      border-color:rgba(0,113,227,.25);
-      background:linear-gradient(180deg,rgba(0,113,227,.10),#fff);
-      box-shadow:0 12px 22px rgba(0,113,227,.18);
+      border-color:rgba(0,113,227,.35);
+      background:
+        radial-gradient(500px 120px at 15% 0%, rgba(0,113,227,.22), transparent 55%),
+        rgba(255,255,255,.82);
+      box-shadow:0 12px 26px rgba(0,113,227,.18);
     }
-    .chip .tag{
-      font-size:.85rem;color:var(--muted);font-weight:800;
+    [data-theme="dark"] .chip.active{
+      background:
+        radial-gradient(500px 120px at 15% 0%, rgba(0,113,227,.22), transparent 55%),
+        rgba(10,14,24,.55);
     }
+    .chip .tag{font-size:.85rem;color:var(--muted);font-weight:900;line-height:1.05}
     .badge{
       min-width:30px;height:26px;border-radius:999px;
       display:flex;align-items:center;justify-content:center;
       padding:0 10px;
-      background:rgba(34,197,94,.12);
+      background:rgba(34,197,94,.14);
       color:#0f7a3b;
       font-weight:1000;
       font-size:.9rem;
     }
-    .chip .auto{
-      background:rgba(0,0,0,.06);
-      color:var(--ink);
-    }
+    [data-theme="dark"] .badge{color:#7cf0b1}
+    .badge.auto{background:rgba(255,255,255,.10); color:var(--ink)}
+    [data-theme="dark"] .badge.auto{color:var(--ink)}
+    .hint{color:var(--muted);font-size:.92rem;line-height:1.25}
 
     /* Controls */
     .controls{
@@ -126,41 +194,53 @@
       margin-top:12px;
     }
     input{
-      border:1px solid var(--hair);
-      background:#fff;
+      border:1px solid var(--hair2);
+      background:rgba(255,255,255,.88);
+      color:var(--ink);
       padding:12px 14px;
       border-radius:16px;
       outline:none;
       min-width:220px;
       box-shadow:0 10px 22px rgba(0,0,0,.06);
+      transition:border-color .12s var(--ease), box-shadow .12s var(--ease);
     }
-    input::placeholder{color:rgba(110,110,115,.9)}
-    .hint{color:var(--muted);font-size:.92rem}
+    [data-theme="dark"] input{
+      background:rgba(10,14,24,.55);
+      box-shadow:0 10px 22px rgba(0,0,0,.32);
+    }
+    input:focus{
+      border-color:rgba(0,113,227,.45);
+      box-shadow:0 12px 26px rgba(0,113,227,.18);
+    }
+    input::placeholder{color:rgba(110,110,115,.92)}
+    .stat{color:var(--muted);font-size:.92rem}
 
-    /* Resident cards */
-    .list{
-      margin-top:14px;
-      display:flex;flex-direction:column;gap:12px;
-    }
+    /* List */
+    .list{margin-top:14px;display:flex;flex-direction:column;gap:12px}
+
     .residentCard{
-      background:var(--card);
-      border:1px solid var(--hair);
+      background:rgba(255,255,255,.86);
+      border:1px solid var(--hair2);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
     }
+    [data-theme="dark"] .residentCard{background:rgba(18,24,41,.80)}
+
     .residentHead{
       display:flex;align-items:center;justify-content:space-between;gap:12px;
       padding:14px 16px;
-      border-bottom:1px solid rgba(0,0,0,.06);
+      border-bottom:1px solid var(--hair2);
       cursor:pointer;
       user-select:none;
+      transition:filter .12s var(--ease);
     }
-    .residentLeft{display:flex;align-items:center;gap:12px}
+    .residentHead:hover{filter:brightness(1.01)}
+    .residentLeft{display:flex;align-items:center;gap:12px;min-width:0}
     .residentIcon{
       width:44px;height:44px;border-radius:16px;
       display:flex;align-items:center;justify-content:center;
-      background:rgba(0,113,227,.10);
+      background:rgba(0,113,227,.12);
       color:var(--blue);
       font-size:1.2rem;
       flex:0 0 auto;
@@ -169,106 +249,163 @@
       font-weight:1000;
       font-size:1.05rem;
       letter-spacing:-.01em;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      max-width: 64vw;
     }
-    .residentMeta{color:var(--muted);font-size:.92rem;margin-top:2px}
+    .residentMeta{color:var(--muted);font-size:.92rem;margin-top:2px;line-height:1.2}
+
     .headBtns{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .miniBtn{
-      border:1px solid var(--hair);
-      background:#fff;
+      border:1px solid var(--hair2);
+      background:rgba(255,255,255,.78);
+      color:var(--ink);
       padding:10px 12px;
       border-radius:999px;
       cursor:pointer;
-      font-weight:900;
-      box-shadow:0 8px 18px rgba(0,0,0,.06);
+      font-weight:950;
+      box-shadow:var(--shadow3);
+      transition:transform .12s var(--ease);
     }
+    [data-theme="dark"] .miniBtn{background:rgba(10,14,24,.45)}
+    .miniBtn:active{transform:scale(.985)}
     .miniBtn.primary{
-      border-color:rgba(0,113,227,.22);
-      background:linear-gradient(180deg,rgba(0,113,227,.10),#fff);
+      border-color:rgba(0,113,227,.30);
+      background:
+        radial-gradient(500px 120px at 15% 0%, rgba(0,113,227,.18), transparent 55%),
+        rgba(255,255,255,.78);
     }
-    .caret{color:var(--muted);font-weight:900}
+    [data-theme="dark"] .miniBtn.primary{
+      background:
+        radial-gradient(500px 120px at 15% 0%, rgba(0,113,227,.18), transparent 55%),
+        rgba(10,14,24,.55);
+    }
+    .caret{color:var(--muted);font-weight:950}
 
     .rows{padding:10px 10px 14px}
     table{width:100%;border-collapse:separate;border-spacing:0 10px}
-    td{padding:0}
+
     .row{
-      border:1px solid rgba(0,0,0,.08);
+      border:1px solid var(--hair2);
       border-radius:18px;
-      box-shadow:0 10px 22px rgba(0,0,0,.06);
-      background:#fff;
+      box-shadow:var(--shadow3);
+      background:rgba(255,255,255,.86);
       overflow:hidden;
+      transition:transform .12s var(--ease), box-shadow .12s var(--ease);
     }
+    [data-theme="dark"] .row{background:rgba(10,14,24,.45)}
+    .row:hover{transform:translateY(-1px); box-shadow:0 14px 32px rgba(0,0,0,.10)}
+    [data-theme="dark"] .row:hover{box-shadow:0 18px 40px rgba(0,0,0,.45)}
+
     .rowInner{
       display:grid;
-      grid-template-columns: 54px 1.3fr 1.6fr 1fr 120px;
-      gap:0;
+      grid-template-columns: 54px 1.35fr 1.35fr 1fr 130px;
       align-items:stretch;
     }
-    .cell{padding:12px 12px;display:flex;flex-direction:column;justify-content:center}
-    .cell + .cell{border-left:1px solid rgba(0,0,0,.06)}
-    .chk{
-      display:flex;align-items:center;justify-content:center;
+    .cell{
+      padding:12px 12px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      min-width:0;
     }
+    .cell + .cell{border-left:1px solid var(--hair2)}
+    .chk{display:flex;align-items:center;justify-content:center}
     .cb{width:18px;height:18px;accent-color:var(--blue)}
-    .medName{font-weight:1000}
-    .small{color:var(--muted);font-size:.92rem;line-height:1.25;margin-top:3px}
-    .timing{font-weight:1000;color:var(--muted)}
+    .medName{font-weight:1000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .small{color:var(--muted);font-size:.92rem;line-height:1.25;margin-top:3px;overflow:hidden}
+    .actBtnWrap{height:100%}
     .actBtn{
       height:100%;
+      width:100%;
       border:none;
       cursor:pointer;
       font-weight:1000;
       color:var(--ink);
-      background:linear-gradient(180deg,rgba(34,197,94,.12),#fff);
+      background:
+        radial-gradient(500px 140px at 15% 0%, rgba(34,197,94,.28), transparent 60%),
+        linear-gradient(180deg, rgba(34,197,94,.12), rgba(255,255,255,.70));
+      transition:filter .12s var(--ease), transform .12s var(--ease);
     }
-    .actBtn:hover{filter:brightness(.99)}
+    [data-theme="dark"] .actBtn{
+      background:
+        radial-gradient(500px 140px at 15% 0%, rgba(34,197,94,.28), transparent 60%),
+        linear-gradient(180deg, rgba(34,197,94,.10), rgba(10,14,24,.55));
+    }
+    .actBtn:hover{filter:brightness(1.02)}
     .actBtn:active{transform:scale(.99)}
-    .actBtnWrap{height:100%}
+
+    /* Selected row glow */
+    .row.selected{
+      border-color: rgba(0,113,227,.35);
+      box-shadow:0 16px 34px rgba(0,113,227,.16);
+    }
 
     /* Bottom action bar */
     .footerBar{
       position:fixed;left:0;right:0;bottom:0;
       background:rgba(245,245,247,.82);
-      backdrop-filter: blur(10px);
-      border-top:1px solid rgba(0,0,0,.08);
+      backdrop-filter: blur(12px);
+      border-top:1px solid var(--hair2);
       padding:10px 14px;
+      z-index:30;
     }
+    [data-theme="dark"] .footerBar{background:rgba(11,15,26,.70)}
     .footerInner{
-      max-width:1200px;margin:0 auto;
+      max-width:var(--max);margin:0 auto;
       display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;
     }
+
     .toast{
-      border:1px solid rgba(0,0,0,.08);
-      background:#fff;
+      display:flex; align-items:flex-start; gap:10px;
+      border:1px solid var(--hair2);
+      background:rgba(255,255,255,.85);
       border-radius:16px;
       padding:10px 12px;
-      box-shadow:0 12px 26px rgba(0,0,0,.10);
+      box-shadow:var(--shadow2);
       color:var(--muted);
       max-width:720px;
+      line-height:1.25;
     }
-    .ok{color:var(--green);font-weight:1000}
-    .warn{color:var(--amber);font-weight:1000}
-    .danger{color:var(--red);font-weight:1000}
+    [data-theme="dark"] .toast{background:rgba(10,14,24,.50)}
+    .dot{width:10px;height:10px;border-radius:999px;margin-top:4px;background:rgba(110,110,115,.40)}
+    .toast.ok .dot{background:rgba(34,197,94,.75)}
+    .toast.warn .dot{background:rgba(245,158,11,.85)}
+    .toast.danger .dot{background:rgba(239,68,68,.85)}
+    .toast b{color:var(--ink)}
 
     .bigBtn{
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
+      border:1px solid var(--hair);
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.70));
+      color:var(--ink);
       padding:12px 14px;
       border-radius:999px;
       cursor:pointer;
       font-weight:1000;
-      box-shadow:var(--shadow2);
+      box-shadow:var(--shadow3);
       display:flex;align-items:center;gap:10px;
+      transition:transform .12s var(--ease);
+      user-select:none;
     }
-    .bigBtn.primary{
-      border-color:rgba(0,113,227,.22);
-      background:linear-gradient(180deg,rgba(0,113,227,.12),#fff);
+    [data-theme="dark"] .bigBtn{
+      background:linear-gradient(180deg, rgba(18,24,41,.92), rgba(18,24,41,.72));
     }
     .bigBtn:active{transform:scale(.985)}
+    .bigBtn.primary{
+      border-color:rgba(0,113,227,.30);
+      background:
+        radial-gradient(500px 140px at 15% 0%, rgba(0,113,227,.22), transparent 60%),
+        linear-gradient(180deg, rgba(0,113,227,.10), rgba(255,255,255,.70));
+    }
+    [data-theme="dark"] .bigBtn.primary{
+      background:
+        radial-gradient(500px 140px at 15% 0%, rgba(0,113,227,.22), transparent 60%),
+        linear-gradient(180deg, rgba(0,113,227,.10), rgba(18,24,41,.72));
+    }
     .countPill{
       min-width:34px;height:26px;border-radius:999px;
       display:flex;align-items:center;justify-content:center;
       padding:0 10px;
-      background:rgba(0,113,227,.10);
+      background:rgba(0,113,227,.12);
       color:var(--blue);
       font-weight:1000;
     }
@@ -276,69 +413,89 @@
     /* Modal */
     .modalBack{
       position:fixed;inset:0;
-      background:rgba(0,0,0,.30);
+      background:rgba(0,0,0,.34);
       display:none;align-items:center;justify-content:center;
       padding:18px;
-      z-index:50;
+      z-index:60;
     }
     .modal{
-      width:min(820px, 96vw);
-      background:#fff;
+      width:min(860px, 96vw);
+      background:rgba(255,255,255,.96);
       border-radius:28px;
-      box-shadow:0 30px 80px rgba(0,0,0,.25);
+      box-shadow:0 30px 90px rgba(0,0,0,.28);
       overflow:hidden;
       border:1px solid rgba(255,255,255,.35);
+    }
+    [data-theme="dark"] .modal{
+      background:rgba(18,24,41,.92);
+      border:1px solid rgba(255,255,255,.10);
     }
     .modalTop{
       padding:16px 18px;
       display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
-      border-bottom:1px solid rgba(0,0,0,.08);
-      background:linear-gradient(180deg,rgba(0,113,227,.08),#fff);
+      border-bottom:1px solid var(--hair2);
+      background:
+        radial-gradient(900px 220px at 10% 0%, rgba(0,113,227,.18), transparent 55%),
+        linear-gradient(180deg, rgba(0,113,227,.06), rgba(255,255,255,.00));
     }
     .modalTitle{font-weight:1000;font-size:1.15rem}
-    .modalSub{color:var(--muted);font-size:.95rem;margin-top:4px}
+    .modalSub{color:var(--muted);font-size:.95rem;margin-top:4px;line-height:1.25}
     .x{
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
+      border:1px solid var(--hair);
+      background:rgba(255,255,255,.80);
       width:40px;height:40px;border-radius:14px;
       cursor:pointer;font-weight:1000;
-      box-shadow:0 10px 22px rgba(0,0,0,.10);
+      box-shadow:var(--shadow3);
+      transition:transform .12s var(--ease);
     }
+    [data-theme="dark"] .x{background:rgba(10,14,24,.45)}
+    .x:active{transform:scale(.985)}
     .modalBody{padding:14px 18px}
-    .selList{display:flex;flex-direction:column;gap:10px;max-height:45vh;overflow:auto;padding-right:4px}
+    .selList{display:flex;flex-direction:column;gap:10px;max-height:48vh;overflow:auto;padding-right:4px}
     .selItem{
-      border:1px solid rgba(0,0,0,.08);
+      border:1px solid var(--hair2);
       border-radius:18px;
       padding:12px 12px;
-      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      box-shadow:var(--shadow3);
+      background:rgba(255,255,255,.82);
     }
+    [data-theme="dark"] .selItem{background:rgba(10,14,24,.45)}
     .selItem .t{font-weight:1000}
     .selItem .s{color:var(--muted);margin-top:3px;font-size:.92rem;line-height:1.25}
     .modalBot{
       padding:14px 18px;
-      border-top:1px solid rgba(0,0,0,.08);
+      border-top:1px solid var(--hair2);
       display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
-      background:rgba(245,245,247,.6);
+      background:rgba(245,245,247,.40);
     }
+    [data-theme="dark"] .modalBot{background:rgba(10,14,24,.35)}
+    .mutedLine{color:var(--muted);font-size:.92rem}
 
     /* Hold-to-confirm button */
     .holdBtn{
       position:relative;
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
+      border:1px solid rgba(34,197,94,.35);
+      background:
+        radial-gradient(500px 140px at 15% 0%, rgba(34,197,94,.26), transparent 60%),
+        linear-gradient(180deg, rgba(34,197,94,.12), rgba(255,255,255,.70));
       padding:12px 16px;
       border-radius:999px;
       cursor:pointer;
       font-weight:1000;
-      box-shadow:0 10px 26px rgba(0,0,0,.10);
+      box-shadow:var(--shadow2);
       overflow:hidden;
       user-select:none;
       display:flex;align-items:center;gap:10px;
+      transition:transform .12s var(--ease);
+      min-width:210px;
+      justify-content:center;
     }
-    .holdBtn.primary{
-      border-color:rgba(34,197,94,.30);
-      background:linear-gradient(180deg,rgba(34,197,94,.16),#fff);
+    [data-theme="dark"] .holdBtn{
+      background:
+        radial-gradient(500px 140px at 15% 0%, rgba(34,197,94,.26), transparent 60%),
+        linear-gradient(180deg, rgba(34,197,94,.10), rgba(10,14,24,.55));
     }
+    .holdBtn:active{transform:scale(.985)}
     .holdFill{
       position:absolute;left:0;top:0;bottom:0;width:0%;
       background:rgba(34,197,94,.22);
@@ -346,64 +503,74 @@
       transition:width .05s linear;
     }
     .holdTxt{position:relative;z-index:1}
-    .mutedLine{color:var(--muted);font-size:.92rem}
+
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none !important; animation:none !important}
+    }
 
     @media (max-width:900px){
-      .rowInner{grid-template-columns:54px 1.3fr 1.6fr 1fr 110px}
+      .rowInner{grid-template-columns:54px 1.3fr 1.25fr 1fr 120px}
     }
     @media (max-width:740px){
       input{min-width:160px;flex:1}
-      .rowInner{grid-template-columns:54px 1.2fr 1.4fr 1fr 98px}
+      .rt{display:none}
+      .rowInner{grid-template-columns:54px 1.25fr 1.15fr 1fr 108px}
+      .residentName{max-width: 56vw}
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div>
-        <div class="brand">LTC Dispense</div>
-        <div class="sub">Shows only meds due for the selected slot. Completed meds are archived automatically.</div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="top">
+    <div class="wrap" style="padding-bottom:10px">
+      <div class="topbar">
+        <div>
+          <div class="brand">LTC Dispense</div>
+          <div class="sub">Shows only meds due for the selected slot. Completed meds are archived automatically.</div>
+        </div>
+        <div class="rt" id="rt">—</div>
       </div>
-      <div class="rt" id="rt">—</div>
-    </div>
 
-    <div class="nav">
-      <span class="navbtn" style="cursor:default">
-        <span class="pill">💊</span> Dispense
-      </span>
-      <a class="navbtn" href="add.html">
-        <span class="pill">➕</span> Add Rx
-      </a>
-      <button class="navbtn" onclick="hardRefresh()">
-        <span class="pill">🔄</span> Refresh
-      </button>
-      <button class="navbtn" onclick="clearSelection()">
-        <span class="pill">🧹</span> Clear
-      </button>
-    </div>
+      <div class="nav">
+        <span class="navbtn" style="cursor:default"><span class="pill">💊</span> Dispense</span>
+        <a class="navbtn" href="add.html"><span class="pill">➕</span> Add Rx</a>
+        <button class="navbtn" id="refreshBtn"><span class="pill">🔄</span> Refresh</button>
+        <button class="navbtn" id="clearBtn"><span class="pill">🧹</span> Clear</button>
 
-    <div class="slotsCard">
-      <div class="slotRow" id="slotRow"></div>
-      <div class="hint" id="slotHint">AUTO: AM 06–11 • NOON 12–13 • PM 14–17 • HS 18–23 • NIGHT 00–05</div>
-    </div>
+        <div class="navRight">
+          <button class="navbtn" id="themeBtn" title="Toggle theme (T)"><span class="pill">🌓</span> Theme</button>
+        </div>
+      </div>
 
-    <div class="controls">
-      <input id="nurse" placeholder="Nurse name (required for log)" />
-      <input id="search" placeholder="Search resident / medication / instructions..." oninput="render()" />
-      <span class="hint" id="stat">—</span>
-    </div>
+      <div class="slotsCard">
+        <div class="slotRow" id="slotRow"></div>
+        <div class="hint" id="slotHint">AUTO: AM 06–11 • NOON 12–13 • PM 14–17 • HS 18–23 • NIGHT 00–05</div>
+      </div>
 
+      <div class="controls">
+        <input id="nurse" placeholder="Nurse name (required for log)" />
+        <input id="search" placeholder="Search resident / medication / instructions..." />
+        <span class="stat" id="stat">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
     <div class="list" id="list"></div>
   </div>
 
   <!-- Bottom bar -->
   <div class="footerBar">
     <div class="footerInner">
-      <div class="toast" id="toast">Ready.</div>
+      <div class="toast" id="toast" role="status" aria-live="polite">
+        <span class="dot" aria-hidden="true"></span>
+        <div>Ready.</div>
+      </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <button class="bigBtn" onclick="clearSelection()">Clear</button>
-        <button class="bigBtn primary" onclick="openConfirm()">
+        <button class="bigBtn" id="clearBtn2">Clear</button>
+        <button class="bigBtn primary" id="dispenseBtn">
           Dispense Selected <span class="countPill" id="selCount">0</span>
         </button>
       </div>
@@ -411,14 +578,17 @@
   </div>
 
   <!-- Confirm modal -->
-  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true">
+  <div class="modalBack" id="modalBack" role="dialog" aria-modal="true" aria-label="Confirm dispense">
     <div class="modal">
       <div class="modalTop">
         <div>
           <div class="modalTitle">Confirm Dispense</div>
           <div class="modalSub" id="modalSub">—</div>
+          <div class="mutedLine" style="margin-top:8px">
+            Shortcuts: <b>Esc</b> close • <b>T</b> theme • <b>Ctrl/⌘+R</b> refresh
+          </div>
         </div>
-        <button class="x" onclick="closeConfirm()">✕</button>
+        <button class="x" id="closeModalBtn">✕</button>
       </div>
 
       <div class="modalBody">
@@ -428,9 +598,8 @@
       <div class="modalBot">
         <div class="mutedLine">Hold the green button to confirm (prevents mis-click).</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <button class="bigBtn" onclick="closeConfirm()">Cancel</button>
-
-          <button class="holdBtn primary" id="holdBtn">
+          <button class="bigBtn" id="cancelBtn">Cancel</button>
+          <button class="holdBtn" id="holdBtn">
             <span class="holdFill" id="holdFill"></span>
             <span class="holdTxt">Hold to Dispense</span>
           </button>
@@ -440,7 +609,7 @@
   </div>
 
 <script>
-/*** YOU MUST SET THESE ***/
+/*** CONFIG (keep same as your current backend) ***/
 const API_URL = "https://script.google.com/macros/s/AKfycbyoUMqa0N9B_6yTqA3bpKt4DfzUhamdvgkHw6TxaGYLUwWu72DLOnJ7sIEmNhoMSVCk/exec";
 const API_KEY = "CHANGE_ME_TO_SOMETHING_SECRET";
 
@@ -449,14 +618,15 @@ const SLOTS = ["AUTO","AM","NOON","PM","HS","NIGHT"];
 const SLOT_EMOJI = { AUTO:"🪄", AM:"🌅", NOON:"🕛", PM:"🌇", HS:"🌙", NIGHT:"🌌" };
 
 /*** State ***/
-let modeSlot = "AUTO";          // user selection (AUTO or fixed)
-let effectiveSlot = "AM";       // computed slot when AUTO
+let modeSlot = "AUTO";
+let effectiveSlot = "AM";
 let counts = { AM:0, NOON:0, PM:0, HS:0, NIGHT:0 };
-let items = [];                 // meds due for effective slot
-let selected = new Set();       // selected IDs
-let expandedResidents = new Set(); // expanded accordions
+let items = [];
+let selected = new Set();
+let expandedResidents = new Set();
 
-/*** Utils ***/
+/*** Helpers ***/
+const $ = (id)=>document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
 const todayISO = () => {
   const d = new Date();
@@ -466,6 +636,19 @@ const nowStr = () => {
   const d = new Date();
   return `${todayISO()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 };
+
+function setTheme(next){
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("ltc_theme", next);
+}
+function initTheme(){
+  const saved = localStorage.getItem("ltc_theme");
+  if (saved) return setTheme(saved);
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  setTheme(prefersDark ? "dark" : "light");
+}
+initTheme();
+
 function detectSlot(d){
   const h = d.getHours();
   if (h>=6 && h<=11) return "AM";
@@ -480,12 +663,12 @@ function esc(s){
     .replaceAll('"',"&quot;").replaceAll("'","&#039;");
 }
 function toast(msg, cls=""){
-  const t = document.getElementById("toast");
+  const t = $("toast");
   t.className = "toast " + (cls||"");
-  t.textContent = msg;
+  t.querySelector("div").textContent = msg;
 }
 function updateRT(){
-  document.getElementById("rt").textContent = `Now: ${nowStr()} • Slot: ${effectiveSlot}`;
+  $("rt").textContent = `Now: ${nowStr()} • Slot: ${effectiveSlot}`;
 }
 setInterval(updateRT, 1000);
 
@@ -510,7 +693,7 @@ function jsonp(url){
 
     function cleanup(){
       clearTimeout(timeout);
-      delete window[cb];
+      try{ delete window[cb]; }catch(_){}
       script.remove();
     }
     document.head.appendChild(script);
@@ -521,13 +704,13 @@ function api(action, params={}){
   return jsonp(`${API_URL}?${q}`);
 }
 
-/*** UI: slot chips ***/
+/*** UI: Slot chips ***/
 function slotChipHTML(slot){
   const active = (modeSlot===slot) ? "active" : "";
   const count = (slot==="AUTO") ? (counts[effectiveSlot] ?? 0) : (counts[slot] ?? 0);
   const badgeClass = (slot==="AUTO") ? "badge auto" : "badge";
   return `
-    <div class="chip ${active}" data-slot="${slot}">
+    <div class="chip ${active}" data-slot="${slot}" role="button" tabindex="0" aria-label="Slot ${slot}">
       <div style="font-size:1.05rem">${SLOT_EMOJI[slot] || "⏱️"}</div>
       <div style="display:flex;flex-direction:column;line-height:1.05">
         <div>${slot}</div>
@@ -538,14 +721,20 @@ function slotChipHTML(slot){
   `;
 }
 function renderSlots(){
-  const row = document.getElementById("slotRow");
+  const row = $("slotRow");
   row.innerHTML = SLOTS.map(slotChipHTML).join("");
   row.querySelectorAll(".chip").forEach(ch => {
-    ch.addEventListener("click", () => {
+    const click = () => {
       modeSlot = ch.dataset.slot;
+      localStorage.setItem("ltc_slot_mode", modeSlot);
       selected.clear();
+      updateSelectedPill();
       renderSlots();
       refresh();
+    };
+    ch.addEventListener("click", click);
+    ch.addEventListener("keydown",(e)=>{
+      if (e.key==="Enter" || e.key===" "){ e.preventDefault(); click(); }
     });
   });
 }
@@ -558,62 +747,70 @@ function groupByResident(list){
     if (!map.has(key)) map.set(key, []);
     map.get(key).push(it);
   });
-  // Sort meds inside resident
   for (const [k, arr] of map.entries()){
     arr.sort((a,b)=>(a.medication||"").localeCompare(b.medication||""));
   }
   return Array.from(map.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
 }
 
-function selectedCount(){
-  return selected.size;
-}
 function updateSelectedPill(){
-  document.getElementById("selCount").textContent = String(selectedCount());
+  $("selCount").textContent = String(selected.size);
 }
 
 function setAllForResident(resName, on){
   const meds = items.filter(x => (x.resident||"").trim() === resName);
-  meds.forEach(m => {
-    if (on) selected.add(m.id);
-    else selected.delete(m.id);
-  });
-  render(); // re-render to sync checkboxes
+  meds.forEach(m => on ? selected.add(m.id) : selected.delete(m.id));
+  updateSelectedPill();
+  render();
 }
-
 function toggleResidentExpand(resName){
   if (expandedResidents.has(resName)) expandedResidents.delete(resName);
   else expandedResidents.add(resName);
+  persistExpanded();
   render();
 }
 
+function persistExpanded(){
+  try{
+    localStorage.setItem("ltc_expanded_v1", JSON.stringify(Array.from(expandedResidents)));
+  }catch(_){}
+}
+function restoreExpanded(){
+  try{
+    const arr = JSON.parse(localStorage.getItem("ltc_expanded_v1") || "[]");
+    expandedResidents = new Set(Array.isArray(arr) ? arr : []);
+  }catch(_){}
+}
+
+/*** Render list ***/
 function render(){
-  const q = (document.getElementById("search").value||"").toLowerCase().trim();
+  const q = ($("search").value||"").toLowerCase().trim();
 
   const filtered = !q ? items : items.filter(it => {
     return (it.resident||"").toLowerCase().includes(q) ||
            (it.medication||"").toLowerCase().includes(q) ||
            (it.instructions||"").toLowerCase().includes(q) ||
-           (it.timing||"").toLowerCase().includes(q);
+           (it.timing||"").toLowerCase().includes(q) ||
+           (it.dueDate||"").toLowerCase().includes(q);
   });
 
   const groups = groupByResident(filtered);
+  const listEl = $("list");
 
-  const listEl = document.getElementById("list");
   if (!filtered.length){
     listEl.innerHTML = `
       <div class="residentCard">
         <div class="residentHead" style="cursor:default">
           <div class="residentLeft">
             <div class="residentIcon">✅</div>
-            <div>
+            <div style="min-width:0">
               <div class="residentName">No meds due</div>
               <div class="residentMeta">Nothing scheduled for ${effectiveSlot} today.</div>
             </div>
           </div>
         </div>
       </div>`;
-    document.getElementById("stat").textContent = `0 due • ${effectiveSlot} • ${todayISO()}`;
+    $("stat").textContent = `0 due • ${effectiveSlot} • ${todayISO()}`;
     updateSelectedPill();
     return;
   }
@@ -625,45 +822,48 @@ function render(){
 
     const rowsHTML = meds.map(m => {
       const checked = selected.has(m.id) ? "checked" : "";
+      const selClass = selected.has(m.id) ? "selected" : "";
       return `
-        <tr><td class="row">
-          <div class="rowInner" data-id="${esc(m.id)}">
-            <div class="cell chk">
-              <input class="cb" type="checkbox" data-id="${esc(m.id)}" ${checked}>
+        <tr>
+          <td class="row ${selClass}" data-row="${esc(m.id)}">
+            <div class="rowInner" data-id="${esc(m.id)}">
+              <div class="cell chk">
+                <input class="cb" type="checkbox" data-id="${esc(m.id)}" ${checked} aria-label="Select medication">
+              </div>
+              <div class="cell">
+                <div class="medName" title="${esc(m.medication)}">${esc(m.medication)}</div>
+                <div class="small">${esc(m.instructions || "—")}</div>
+              </div>
+              <div class="cell">
+                <div class="medName">Timing</div>
+                <div class="small">${esc(m.timing || "—")}</div>
+              </div>
+              <div class="cell">
+                <div class="medName">Due date</div>
+                <div class="small">${esc(m.dueDate || todayISO())}</div>
+              </div>
+              <div class="actBtnWrap">
+                <button class="actBtn" data-one="${esc(m.id)}" title="Dispense this one">Dispense</button>
+              </div>
             </div>
-            <div class="cell">
-              <div class="medName">${esc(m.medication)}</div>
-              <div class="small">${esc(m.instructions || "—")}</div>
-            </div>
-            <div class="cell">
-              <div class="medName">Timing</div>
-              <div class="small">${esc(m.timing || "—")}</div>
-            </div>
-            <div class="cell">
-              <div class="medName">Due date</div>
-              <div class="small">${esc(m.dueDate || todayISO())}</div>
-            </div>
-            <div class="actBtnWrap">
-              <button class="actBtn" data-one="${esc(m.id)}">Dispense</button>
-            </div>
-          </div>
-        </td></tr>
+          </td>
+        </tr>
       `;
     }).join("");
 
     return `
       <div class="residentCard">
-        <div class="residentHead" data-res="${esc(resName)}">
+        <div class="residentHead" data-res="${esc(resName)}" role="button" tabindex="0" aria-label="Toggle resident ${esc(resName)}">
           <div class="residentLeft">
             <div class="residentIcon">👤</div>
-            <div>
-              <div class="residentName">${esc(resName)}</div>
+            <div style="min-width:0">
+              <div class="residentName" title="${esc(resName)}">${esc(resName)}</div>
               <div class="residentMeta">${esc(headMeta)}</div>
             </div>
           </div>
           <div class="headBtns">
-            <button class="miniBtn" data-selall="${esc(resName)}">Select all</button>
-            <button class="miniBtn" data-unsel="${esc(resName)}">Unselect</button>
+            <button class="miniBtn" data-selall="${esc(resName)}" title="Select all for this resident">Select all</button>
+            <button class="miniBtn" data-unsel="${esc(resName)}" title="Unselect this resident">Unselect</button>
             <button class="miniBtn primary" data-open="${esc(resName)}">${isOpen ? "Hide" : "Show"}</button>
             <div class="caret">${isOpen ? "▾" : "▸"}</div>
           </div>
@@ -673,40 +873,56 @@ function render(){
     `;
   }).join("");
 
-  // Hook up buttons
+  // Resident toggles
   listEl.querySelectorAll("[data-open]").forEach(btn=>{
-    btn.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      toggleResidentExpand(btn.dataset.open);
-    });
+    btn.addEventListener("click",(e)=>{ e.stopPropagation(); toggleResidentExpand(btn.dataset.open); });
   });
   listEl.querySelectorAll(".residentHead").forEach(head=>{
-    head.addEventListener("click",(e)=>{
+    const toggle = ()=>{
       const res = head.dataset.res;
       if (!res) return;
       toggleResidentExpand(res);
+    };
+    head.addEventListener("click",(e)=>{
+      // ignore button clicks inside header
+      if ((e.target?.tagName || "").toLowerCase() === "button") return;
+      toggle();
     });
-  });
-  listEl.querySelectorAll("[data-selall]").forEach(btn=>{
-    btn.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      setAllForResident(btn.dataset.selall, true);
-    });
-  });
-  listEl.querySelectorAll("[data-unsel]").forEach(btn=>{
-    btn.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      setAllForResident(btn.dataset.unsel, false);
+    head.addEventListener("keydown",(e)=>{
+      if (e.key==="Enter" || e.key===" "){ e.preventDefault(); toggle(); }
     });
   });
 
-  // Checkbox changes
+  // Select/unselect resident
+  listEl.querySelectorAll("[data-selall]").forEach(btn=>{
+    btn.addEventListener("click",(e)=>{ e.stopPropagation(); setAllForResident(btn.dataset.selall, true); });
+  });
+  listEl.querySelectorAll("[data-unsel]").forEach(btn=>{
+    btn.addEventListener("click",(e)=>{ e.stopPropagation(); setAllForResident(btn.dataset.unsel, false); });
+  });
+
+  // Checkbox changes + row click toggles
   listEl.querySelectorAll(".cb").forEach(cb=>{
     cb.addEventListener("change",()=>{
       const id = cb.dataset.id;
       if (!id) return;
       if (cb.checked) selected.add(id); else selected.delete(id);
       updateSelectedPill();
+      // row highlight
+      const row = listEl.querySelector(`[data-row="${CSS.escape(id)}"]`);
+      if (row) row.classList.toggle("selected", cb.checked);
+    });
+  });
+
+  listEl.querySelectorAll("[data-row]").forEach(row=>{
+    row.addEventListener("click",(e)=>{
+      const tag = (e.target?.tagName || "").toLowerCase();
+      if (tag==="button" || tag==="input") return;
+      const id = row.getAttribute("data-row");
+      const cb = row.querySelector(`input.cb[data-id="${CSS.escape(id)}"]`);
+      if (!cb) return;
+      cb.checked = !cb.checked;
+      cb.dispatchEvent(new Event("change", {bubbles:true}));
     });
   });
 
@@ -721,9 +937,7 @@ function render(){
     });
   });
 
-  document.getElementById("stat").textContent =
-    `${filtered.length} due • ${effectiveSlot} • ${todayISO()} • Residents: ${groups.length}`;
-
+  $("stat").textContent = `${filtered.length} due • ${effectiveSlot} • ${todayISO()} • Residents: ${groups.length}`;
   updateSelectedPill();
 }
 
@@ -734,21 +948,19 @@ async function refresh(){
     updateRT();
     toast("Loading…");
 
-    // counts (fast summary)
     const cRes = await api("getCounts", { date: todayISO() });
     if (cRes.ok && cRes.data) counts = cRes.data;
 
     renderSlots();
 
-    // meds for slot
     const mRes = await api("getMeds", { slot: effectiveSlot, date: todayISO() });
     if (!mRes.ok) throw new Error(mRes.message || "API error");
     items = Array.isArray(mRes.data) ? mRes.data : [];
 
-    // Auto-expand residents if only a few
     const groupCount = groupByResident(items).length;
     if (expandedResidents.size === 0 && groupCount <= 4) {
       groupByResident(items).forEach(([r]) => expandedResidents.add(r));
+      persistExpanded();
     }
 
     render();
@@ -759,7 +971,6 @@ async function refresh(){
 }
 
 function hardRefresh(){
-  // keep expanded residents, but clear selection
   selected.clear();
   updateSelectedPill();
   refresh();
@@ -774,28 +985,31 @@ function clearSelection(){
 /*** Confirm modal + hold-to-dispense ***/
 function openConfirm(){
   if (selected.size === 0) return toast("Select at least 1 medication.", "warn");
-  const nurse = (document.getElementById("nurse").value||"").trim();
+
+  const nurse = ($("nurse").value||"").trim();
   if (!nurse) return toast("Enter nurse name first.", "warn");
+
+  // Persist nurse locally
+  localStorage.setItem("ltc_nurse_v1", nurse);
 
   const chosen = items.filter(x => selected.has(x.id));
   if (!chosen.length) return toast("Selected items are not in the current slot list (refresh).", "warn");
 
-  document.getElementById("modalSub").textContent =
-    `Slot: ${effectiveSlot} • Nurse: ${nurse} • Items: ${chosen.length}`;
-
-  document.getElementById("selList").innerHTML = chosen.map(x => `
+  $("modalSub").textContent = `Slot: ${effectiveSlot} • Nurse: ${nurse} • Items: ${chosen.length}`;
+  $("selList").innerHTML = chosen.map(x => `
     <div class="selItem">
       <div class="t">${esc(x.resident)} — ${esc(x.medication)}</div>
       <div class="s">${esc(x.instructions || "—")}</div>
-      <div class="s">Timing: ${esc(x.timing || "—")}</div>
+      <div class="s">Timing: ${esc(x.timing || "—")} • Due: ${esc(x.dueDate || todayISO())}</div>
     </div>
   `).join("");
 
-  document.getElementById("modalBack").style.display = "flex";
+  $("modalBack").style.display = "flex";
+  resetHold();
 }
 
 function closeConfirm(){
-  document.getElementById("modalBack").style.display = "none";
+  $("modalBack").style.display = "none";
   resetHold();
 }
 
@@ -804,14 +1018,13 @@ let holdStart = 0;
 const HOLD_MS = 900;
 
 function resetHold(){
-  const fill = document.getElementById("holdFill");
-  fill.style.width = "0%";
+  $("holdFill").style.width = "0%";
   if (holdTimer) { clearInterval(holdTimer); holdTimer = null; }
   holdStart = 0;
 }
 
 async function runDispense(){
-  const nurse = (document.getElementById("nurse").value||"").trim();
+  const nurse = ($("nurse").value||"").trim();
   const ids = Array.from(selected);
 
   toast("Dispensing…");
@@ -828,31 +1041,6 @@ async function runDispense(){
   }
 }
 
-// Hold-to-confirm behavior
-const holdBtn = document.getElementById("holdBtn");
-holdBtn.addEventListener("pointerdown", () => {
-  resetHold();
-  holdStart = performance.now();
-
-  holdTimer = setInterval(() => {
-    const elapsed = performance.now() - holdStart;
-    const pct = Math.min(100, (elapsed / HOLD_MS) * 100);
-    document.getElementById("holdFill").style.width = pct + "%";
-    if (elapsed >= HOLD_MS) {
-      resetHold();
-      runDispense();
-    }
-  }, 20);
-});
-["pointerup","pointerleave","pointercancel"].forEach(evt=>{
-  holdBtn.addEventListener(evt, () => resetHold());
-});
-
-// Close modal on backdrop click
-document.getElementById("modalBack").addEventListener("click",(e)=>{
-  if (e.target.id === "modalBack") closeConfirm();
-});
-
 /*** Auto slot switching every minute when AUTO ***/
 setInterval(()=>{
   if (modeSlot !== "AUTO") return;
@@ -860,15 +1048,87 @@ setInterval(()=>{
   if (newSlot !== effectiveSlot) {
     effectiveSlot = newSlot;
     selected.clear();
+    updateSelectedPill();
     toast(`Auto-switched to ${effectiveSlot}. Refreshing…`, "ok");
     refresh();
   }
 }, 60000);
 
-// Initial
-effectiveSlot = detectSlot(new Date());
-renderSlots();
-refresh();
+/*** Wire UI ***/
+function init(){
+  // restore nurse
+  const savedNurse = localStorage.getItem("ltc_nurse_v1");
+  if (savedNurse) $("nurse").value = savedNurse;
+
+  // restore slot
+  const savedSlot = localStorage.getItem("ltc_slot_mode");
+  if (savedSlot && SLOTS.includes(savedSlot)) modeSlot = savedSlot;
+
+  // restore expanded
+  restoreExpanded();
+
+  effectiveSlot = detectSlot(new Date());
+  renderSlots();
+  refresh();
+
+  $("search").addEventListener("input", render);
+
+  $("refreshBtn").addEventListener("click", hardRefresh);
+  $("clearBtn").addEventListener("click", clearSelection);
+  $("clearBtn2").addEventListener("click", clearSelection);
+
+  $("dispenseBtn").addEventListener("click", openConfirm);
+  $("cancelBtn").addEventListener("click", closeConfirm);
+  $("closeModalBtn").addEventListener("click", closeConfirm);
+
+  $("themeBtn").addEventListener("click", ()=>{
+    const cur = document.documentElement.getAttribute("data-theme") || "light";
+    setTheme(cur === "dark" ? "light" : "dark");
+  });
+
+  // Hold-to-confirm behavior
+  const holdBtn = $("holdBtn");
+  holdBtn.addEventListener("pointerdown", () => {
+    resetHold();
+    holdStart = performance.now();
+
+    holdTimer = setInterval(() => {
+      const elapsed = performance.now() - holdStart;
+      const pct = Math.min(100, (elapsed / HOLD_MS) * 100);
+      $("holdFill").style.width = pct + "%";
+      if (elapsed >= HOLD_MS) {
+        resetHold();
+        runDispense();
+      }
+    }, 20);
+  });
+  ["pointerup","pointerleave","pointercancel"].forEach(evt=>{
+    holdBtn.addEventListener(evt, resetHold);
+  });
+
+  // Close modal on backdrop click
+  $("modalBack").addEventListener("click",(e)=>{
+    if (e.target.id === "modalBack") closeConfirm();
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener("keydown",(e)=>{
+    const isMac = navigator.platform.toLowerCase().includes("mac");
+    const mod = isMac ? e.metaKey : e.ctrlKey;
+
+    if (mod && (e.key.toLowerCase()==="r")){ e.preventDefault(); hardRefresh(); }
+    if (e.key === "Escape"){ closeConfirm(); }
+    if (e.key.toLowerCase() === "t" && !e.ctrlKey && !e.metaKey && !e.altKey){
+      const tag = (document.activeElement?.tagName || "").toLowerCase();
+      if (tag !== "input" && tag !== "textarea" && tag !== "select"){
+        const cur = document.documentElement.getAttribute("data-theme") || "light";
+        setTheme(cur === "dark" ? "light" : "dark");
+      }
+    }
+  });
+}
+
+init();
 </script>
 </body>
 </html>

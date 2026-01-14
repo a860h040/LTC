@@ -1,245 +1,331 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Add RX</title>
+  <title>Add Rx • LTC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
     :root{
       --bg:#f5f5f7;
       --card:#ffffff;
-      --ink:#111827;
-      --sub:#6b7280;
+      --ink:#1d1d1f;
+      --muted:#6e6e73;
       --blue:#0071e3;
       --green:#22c55e;
-      --line:rgba(0,0,0,.08);
-      --shadow:0 18px 45px rgba(0,0,0,.10);
-      --r:26px;
+      --hair:rgba(0,0,0,.08);
+      --radius:26px;
+      --shadow:0 18px 40px rgba(0,0,0,.08);
+      --shadow2:0 10px 26px rgba(0,0,0,.10);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
       background:var(--bg);
       color:var(--ink);
     }
-    .wrap{padding:26px 6vw 28px;}
-    .panel{
+    .wrap{max-width:980px;margin:0 auto;padding:24px 18px 40px}
+    .topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+    .brand{
+      font-weight:900;
+      font-size:clamp(1.8rem,2.5vw,2.6rem);
+      background:linear-gradient(90deg,#0071e3,#34c759);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+      letter-spacing:-.02em;
+    }
+    .sub{color:var(--muted);margin-top:4px}
+    .nav{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+      margin:12px 0 14px;
+    }
+    .navbtn{
+      display:flex;align-items:center;gap:10px;
+      border:1px solid var(--hair);
       background:var(--card);
-      border:1px solid var(--line);
-      border-radius:var(--r);
+      border-radius:999px;
+      padding:10px 14px;
+      box-shadow:var(--shadow2);
+      cursor:pointer;
+      font-weight:900;
+      color:var(--ink);
+      text-decoration:none;
+    }
+    .pill{
+      width:34px;height:34px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(0,113,227,.10);
+      color:var(--blue);
+      font-size:1.1rem;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--hair);
+      border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .topbar{
-      padding:14px 16px;
-      display:flex;
-      align-items:center;
-      gap:12px;
-      border-bottom:1px solid var(--line);
-      background:linear-gradient(180deg,#fff, #fafafa);
+    .head{
+      padding:16px 18px;
+      border-bottom:1px solid rgba(0,0,0,.08);
+      background:linear-gradient(180deg,rgba(0,113,227,.08),#fff);
     }
-    .backBtn{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:44px;height:44px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:#111827;
-      box-shadow:0 10px 26px rgba(0,0,0,.10);
-      cursor:pointer;
-      transition:transform .12s ease, box-shadow .12s ease;
-    }
-    .backBtn:hover{transform:translateY(-1px);box-shadow:0 14px 32px rgba(0,0,0,.14)}
-    .backBtn:active{transform:scale(.98)}
-    .backBtn img{width:22px;height:22px;object-fit:contain}
+    .title{font-weight:1000;font-size:1.15rem}
+    .hint{color:var(--muted);margin-top:4px}
 
-    .title{
-      font-size:1.2rem;
-      font-weight:800;
-      margin:0;
-    }
-    .sub{margin:2px 0 0;color:var(--sub);font-size:.95rem}
-
-    .content{padding:16px;}
-    .grid{
+    .form{
+      padding:16px 18px;
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns:1fr 1fr;
       gap:12px;
     }
-    @media(max-width:900px){ .grid{grid-template-columns:1fr;} }
-
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
+    label{
+      display:block;
+      color:var(--muted);
+      font-weight:1000;
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:6px;
     }
-    label{font-size:.85rem;color:#475569;font-weight:700}
-    input, select, textarea{
-      border:1px solid var(--line);
-      border-radius:16px;
-      height:46px;
-      padding:0 12px;
-      font-size:.96rem;
-      outline:none;
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--hair);
       background:#fff;
+      padding:12px 14px;
+      border-radius:16px;
+      outline:none;
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
     }
-    textarea{
-      height:110px;
-      padding:10px 12px;
-      resize:vertical;
-    }
+    textarea{min-height:110px;resize:vertical}
+    .full{grid-column:1 / -1}
 
-    .actions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      padding: 14px 16px 18px;
-      border-top:1px solid var(--line);
+    .bot{
+      padding:14px 18px;
+      border-top:1px solid rgba(0,0,0,.08);
+      display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;
+      background:rgba(245,245,247,.6);
     }
     .btn{
-      border:none;
-      height:46px;
-      padding:0 16px;
-      border-radius:16px;
+      border:1px solid rgba(0,0,0,.10);
+      background:#fff;
+      padding:12px 14px;
+      border-radius:999px;
       cursor:pointer;
-      font-weight:750;
-      transition: transform .12s ease, box-shadow .12s ease;
+      font-weight:1000;
+      box-shadow:var(--shadow2);
+      display:flex;align-items:center;gap:10px;
     }
-    .btn:active{transform:scale(.99)}
-    .btn.primary{background:var(--blue);color:#fff;box-shadow:0 14px 30px rgba(0,113,227,.22)}
-    .btn.ghost{background:#111827;color:#fff}
-    .note{
-      color:var(--sub);
-      font-size:.92rem;
-      margin-left:auto;
-      align-self:center;
+    .btn.primary{
+      border-color:rgba(0,113,227,.22);
+      background:linear-gradient(180deg,rgba(0,113,227,.12),#fff);
     }
-    .status{font-weight:800}
-    .ok{color:#047857}
-    .err{color:#b91c1c}
+    .msg{
+      border:1px solid rgba(0,0,0,.08);
+      background:#fff;
+      border-radius:16px;
+      padding:10px 12px;
+      box-shadow:0 12px 26px rgba(0,0,0,.10);
+      color:var(--muted);
+      max-width:660px;
+    }
+    .ok{color:var(--green);font-weight:1000}
+    .warn{color:#f59e0b;font-weight:1000}
+
+    @media (max-width:760px){
+      .form{grid-template-columns:1fr}
+    }
   </style>
 </head>
 
 <body>
-  <main class="wrap">
-    <section class="panel">
-      <div class="topbar">
-        <button class="backBtn" id="back" title="Back to Dispense">
-          <img src="sigler-500-white.png" alt="Back icon" />
-        </button>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <div class="brand">Add Rx</div>
+        <div class="sub">Writes a new row into <b>DispenseQueue</b>.</div>
+      </div>
+      <div class="sub" id="rt">—</div>
+    </div>
+
+    <div class="nav">
+      <a class="navbtn" href="index.html"><span class="pill">←</span> Back to Dispense</a>
+      <button class="navbtn" onclick="loadLookups()"><span class="pill">✨</span> Load suggestions</button>
+      <button class="navbtn" onclick="clearForm()"><span class="pill">🧹</span> Clear</button>
+    </div>
+
+    <div class="card">
+      <div class="head">
+        <div class="title">New prescription</div>
+        <div class="hint">Timing supports AM/PM/HS/NIGHT or BID/TID/QID (or “AM,PM”). Due date defaults to today.</div>
+      </div>
+
+      <div class="form">
         <div>
-          <h2 class="title">Add Prescription</h2>
-          <p class="sub">Writes a new RX row into Google Sheet.</p>
+          <label>Resident (optional)</label>
+          <input id="resident" list="residentList" placeholder="Room 101 / Resident name" />
+          <datalist id="residentList"></datalist>
+        </div>
+
+        <div>
+          <label>Entered by</label>
+          <input id="enteredBy" placeholder="Nurse / staff name" />
+        </div>
+
+        <div class="full">
+          <label>Medication (required)</label>
+          <input id="medication" list="medList" placeholder="Drug + strength + form" />
+          <datalist id="medList"></datalist>
+        </div>
+
+        <div class="full">
+          <label>Instructions</label>
+          <textarea id="instructions" placeholder="Directions / notes"></textarea>
+        </div>
+
+        <div>
+          <label>Timing (required)</label>
+          <select id="timing">
+            <option value="">— Select —</option>
+            <option>AM</option>
+            <option>NOON</option>
+            <option>PM</option>
+            <option>HS</option>
+            <option>NIGHT</option>
+            <option>BID</option>
+            <option>TID</option>
+            <option>QID</option>
+            <option>AM,PM</option>
+            <option>AM,NOON,PM</option>
+            <option>AM,NOON,PM,HS</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Due date</label>
+          <input id="dueDate" type="date" />
         </div>
       </div>
 
-      <div class="content">
-        <div class="grid">
-          <div class="field">
-            <label>Resident</label>
-            <input id="resident" placeholder="Resident name" />
-          </div>
-
-          <div class="field">
-            <label>Medication</label>
-            <input id="med" placeholder="Drug name" />
-          </div>
-
-          <div class="field">
-            <label>Timing</label>
-            <select id="timing">
-              <option value="AM">AM</option>
-              <option value="NOON">NOON</option>
-              <option value="PM">PM</option>
-              <option value="HS">HS</option>
-              <option value="NIGHT">NIGHT</option>
-              <option value="BID AM/PM">BID AM/PM</option>
-              <option value="TID AM/NOON/PM">TID AM/NOON/PM</option>
-              <option value="QID AM/NOON/PM/HS">QID AM/NOON/PM/HS</option>
-              <option value="PRN">PRN</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label>Dose / Instructions</label>
-            <textarea id="instr" placeholder="Example: 1 tablet by mouth with food"></textarea>
-          </div>
+      <div class="bot">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn primary" onclick="submitRx()"><span class="pill">➕</span> Add to Queue</button>
+          <button class="btn" onclick="clearForm()"><span class="pill">🧹</span> Clear</button>
         </div>
+        <div class="msg" id="msg">Ready.</div>
       </div>
+    </div>
+  </div>
 
-      <div class="actions">
-        <button class="btn primary" id="addBtn">Add RX</button>
-        <button class="btn ghost" id="clearBtn">Clear</button>
-        <div class="note"><span id="status" class="status"></span></div>
-      </div>
-    </section>
-  </main>
+<script>
+/*** YOU MUST SET THESE ***/
+const API_URL = "https://script.google.com/macros/s/AKfycbxHqruOM0OncDT-ZGT7HqhkjklKU0rpg2-BpBiqk4iDsGD5EfxFcM-fd1-n2Y2vcUU/exec";
+const API_KEY = "CHANGE_ME_TO_SOMETHING_SECRET";
 
-  <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxHqruOM0OncDT-ZGT7HqhkjklKU0rpg2-BpBiqk4iDsGD5EfxFcM-fd1-n2Y2vcUU/exec"; // <-- same deployed GAS Web App URL
-    const SPREADSHEET_ID = "17FXMcaJ2un_rhKKlYZbJR6yd2BDgISIM2k0z6iC9_O4";
-    const SHEET_NAME = "Dispense";
+const pad = n => String(n).padStart(2,"0");
+const todayISO = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+};
+document.getElementById("dueDate").value = todayISO();
+document.getElementById("rt").textContent = `Today: ${todayISO()}`;
 
-    const statusEl = document.getElementById("status");
+function msg(text, cls=""){
+  const el = document.getElementById("msg");
+  el.className = "msg " + (cls||"");
+  el.textContent = text;
+}
 
-    document.getElementById("back").addEventListener("click", ()=> {
-      window.location.href = "index.html";
-    });
+/*** JSONP ***/
+function jsonp(url){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const sep = url.includes("?") ? "&" : "?";
+    const full = url + sep + "callback=" + cb;
 
-    function setStatus(msg, cls=""){
-      statusEl.className = "status " + cls;
-      statusEl.textContent = msg || "";
+    const script = document.createElement("script");
+    script.src = full;
+    script.async = true;
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("API timeout"));
+    }, 20000);
+
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    script.onerror = () => { cleanup(); reject(new Error("API load error")); };
+
+    function cleanup(){
+      clearTimeout(timeout);
+      delete window[cb];
+      script.remove();
     }
+    document.head.appendChild(script);
+  });
+}
+function api(action, params={}){
+  const q = new URLSearchParams({ action, key: API_KEY, ...params }).toString();
+  return jsonp(`${API_URL}?${q}`);
+}
 
-    async function api(action, payload){
-      if (!WEB_APP_URL){
-        throw new Error("WEB_APP_URL is empty. Paste your deployed Google Apps Script Web App URL.");
-      }
-      const res = await fetch(WEB_APP_URL, {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ action, spreadsheetId: SPREADSHEET_ID, sheetName: SHEET_NAME, ...payload })
-      });
-      const data = await res.json();
-      if (!data.ok) throw new Error(data.error || "Unknown error");
-      return data;
-    }
+function clearForm(){
+  document.getElementById("resident").value = "";
+  document.getElementById("enteredBy").value = "";
+  document.getElementById("medication").value = "";
+  document.getElementById("instructions").value = "";
+  document.getElementById("timing").value = "";
+  document.getElementById("dueDate").value = todayISO();
+  msg("Ready.");
+}
 
-    function val(id){ return document.getElementById(id).value.trim(); }
+async function loadLookups(){
+  try{
+    msg("Loading suggestions…");
+    const res = await api("lookups", {});
+    if (!res.ok) throw new Error(res.message || "Lookup failed");
 
-    document.getElementById("clearBtn").addEventListener("click", ()=>{
-      ["resident","med","instr"].forEach(id => document.getElementById(id).value = "");
-      document.getElementById("timing").value = "AM";
-      setStatus("Cleared", "");
-    });
+    const residents = res.data?.residents || [];
+    const meds = res.data?.medications || [];
 
-    document.getElementById("addBtn").addEventListener("click", async ()=>{
-      try{
-        const resident = val("resident");
-        const med = val("med");
-        const timing = val("timing");
-        const instr = val("instr");
+    document.getElementById("residentList").innerHTML =
+      residents.map(x=>`<option value="${String(x).replaceAll('"','&quot;')}"></option>`).join("");
 
-        if (!resident || !med || !timing){
-          setStatus("Fill Resident + Medication + Timing", "err");
-          return;
-        }
+    document.getElementById("medList").innerHTML =
+      meds.map(x=>`<option value="${String(x).replaceAll('"','&quot;')}"></option>`).join("");
 
-        setStatus("Adding…");
-        await api("add_rx", { resident, med, instr, timing });
+    msg(`Loaded ${residents.length} residents + ${meds.length} medications.`, "ok");
+  } catch(e){
+    msg("Error: " + e.message, "warn");
+  }
+}
 
-        setStatus("Added ✅", "ok");
+async function submitRx(){
+  const payload = {
+    resident: document.getElementById("resident").value.trim(),
+    enteredBy: document.getElementById("enteredBy").value.trim(),
+    medication: document.getElementById("medication").value.trim(),
+    instructions: document.getElementById("instructions").value.trim(),
+    timing: document.getElementById("timing").value.trim(),
+    dueDate: document.getElementById("dueDate").value.trim()
+  };
 
-        // optional: clear fields after add
-        document.getElementById("med").value = "";
-        document.getElementById("instr").value = "";
-      }catch(e){
-        setStatus("Error: " + e.message, "err");
-      }
-    });
-  </script>
+  if (!payload.medication) return msg("Medication is required.", "warn");
+  if (!payload.timing) return msg("Timing is required.", "warn");
+
+  try{
+    msg("Saving…");
+    const res = await api("addRx", payload);
+    if (!res.ok) throw new Error(res.message || "Save failed");
+    msg(res.message || "Added.", "ok");
+    clearForm();
+  } catch(e){
+    msg("Error: " + e.message, "warn");
+  }
+}
+
+// Auto load suggestions once (optional)
+loadLookups();
+</script>
 </body>
 </html>

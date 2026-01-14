@@ -2,190 +2,422 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Add Rx • LTC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Add Rx • LTC</title>
 
   <style>
     :root{
+      /* Brand */
+      --blue:#0071e3;
+      --green:#22c55e;
+      --amber:#f59e0b;
+      --red:#ef4444;
+
+      /* Light */
       --bg:#f5f5f7;
       --card:#ffffff;
       --ink:#1d1d1f;
       --muted:#6e6e73;
-      --blue:#0071e3;
-      --green:#22c55e;
-      --hair:rgba(0,0,0,.08);
+      --hair:rgba(0,0,0,.10);
+      --hair2:rgba(0,0,0,.06);
+
+      /* Depth */
       --radius:26px;
-      --shadow:0 18px 40px rgba(0,0,0,.08);
+      --radius2:18px;
+      --shadow:0 18px 50px rgba(0,0,0,.10);
       --shadow2:0 10px 26px rgba(0,0,0,.10);
+      --shadow3:0 8px 18px rgba(0,0,0,.06);
+
+      /* Motion */
+      --ease:cubic-bezier(.2,.8,.2,1);
+
+      /* Layout */
+      --max:980px;
     }
+
+    [data-theme="dark"]{
+      --bg:#0b0f1a;
+      --card:#121829;
+      --ink:#e9eefc;
+      --muted:#a5b0c9;
+      --hair:rgba(255,255,255,.12);
+      --hair2:rgba(255,255,255,.08);
+      --shadow:0 18px 60px rgba(0,0,0,.55);
+      --shadow2:0 10px 30px rgba(0,0,0,.45);
+      --shadow3:0 8px 18px rgba(0,0,0,.35);
+    }
+
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
-      background:var(--bg);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 700px at 15% -10%, rgba(0,113,227,.18), transparent 55%),
+        radial-gradient(900px 600px at 95% 0%, rgba(34,197,94,.14), transparent 55%),
+        radial-gradient(900px 700px at 50% 120%, rgba(245,158,11,.10), transparent 60%),
+        var(--bg);
       color:var(--ink);
+      overflow-x:hidden;
     }
-    .wrap{max-width:980px;margin:0 auto;padding:24px 18px 40px}
-    .topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+
+    /* Subtle noise overlay (no external assets) */
+    .noise{
+      pointer-events:none;
+      position:fixed; inset:0;
+      opacity:.08;
+      mix-blend-mode:overlay;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      background-size:240px 240px;
+    }
+
+    .wrap{
+      max-width:var(--max);
+      margin:0 auto;
+      padding:22px 16px 40px;
+    }
+
+    /* Sticky glass header */
+    .top{
+      position:sticky; top:0; z-index:20;
+      padding:14px 0 10px;
+      backdrop-filter: blur(12px);
+      background:linear-gradient(180deg, rgba(245,245,247,.80), rgba(245,245,247,.30));
+      border-bottom:1px solid var(--hair2);
+    }
+    [data-theme="dark"] .top{
+      background:linear-gradient(180deg, rgba(11,15,26,.72), rgba(11,15,26,.30));
+    }
+
+    .topbar{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+    }
+
     .brand{
-      font-weight:900;
-      font-size:clamp(1.8rem,2.5vw,2.6rem);
-      background:linear-gradient(90deg,#0071e3,#34c759);
-      -webkit-background-clip:text;background-clip:text;color:transparent;
-      letter-spacing:-.02em;
+      font-weight:950;
+      font-size:clamp(1.65rem,2.5vw,2.6rem);
+      letter-spacing:-.03em;
+      line-height:1.05;
+      background:linear-gradient(90deg, var(--blue), #34c759, #60a5fa);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
     }
-    .sub{color:var(--muted);margin-top:4px}
+    .sub{
+      margin-top:6px;
+      color:var(--muted);
+      line-height:1.25;
+      font-size:.95rem;
+    }
+
+    .rt{
+      text-align:right;
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.25;
+      padding-top:6px;
+      white-space:nowrap;
+    }
+
     .nav{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      margin:12px 0 14px;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin:14px 0 14px;
     }
-    .navbtn{
-      display:flex;align-items:center;gap:10px;
+
+    .chipBtn, .navbtn, .btn{
       border:1px solid var(--hair);
-      background:var(--card);
+      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.70));
+      color:var(--ink);
       border-radius:999px;
       padding:10px 14px;
-      box-shadow:var(--shadow2);
+      font-weight:950;
       cursor:pointer;
-      font-weight:900;
-      color:var(--ink);
+      box-shadow:var(--shadow3);
+      display:inline-flex; align-items:center; gap:10px;
+      transition:transform .12s var(--ease), box-shadow .12s var(--ease), filter .12s var(--ease);
+      user-select:none;
       text-decoration:none;
     }
+    [data-theme="dark"] .chipBtn,
+    [data-theme="dark"] .navbtn,
+    [data-theme="dark"] .btn{
+      background:linear-gradient(180deg, rgba(18,24,41,.92), rgba(18,24,41,.72));
+    }
+    .navbtn:active,.btn:active,.chipBtn:active{transform:scale(.985)}
+    .navbtn:hover,.btn:hover,.chipBtn:hover{filter:brightness(1.02)}
+
     .pill{
       width:34px;height:34px;border-radius:12px;
       display:flex;align-items:center;justify-content:center;
-      background:rgba(0,113,227,.10);
+      background:rgba(0,113,227,.12);
       color:var(--blue);
       font-size:1.1rem;
+      flex:0 0 auto;
+    }
+
+    .toggle{
+      margin-left:auto;
+      display:flex; gap:10px; flex-wrap:wrap;
     }
 
     .card{
-      background:var(--card);
-      border:1px solid var(--hair);
+      background:rgba(255,255,255,.88);
+      border:1px solid var(--hair2);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
     }
+    [data-theme="dark"] .card{
+      background:rgba(18,24,41,.82);
+    }
+
     .head{
       padding:16px 18px;
-      border-bottom:1px solid rgba(0,0,0,.08);
-      background:linear-gradient(180deg,rgba(0,113,227,.08),#fff);
+      border-bottom:1px solid var(--hair2);
+      background:
+        radial-gradient(900px 220px at 10% 0%, rgba(0,113,227,.18), transparent 55%),
+        linear-gradient(180deg, rgba(0,113,227,.06), rgba(255,255,255,.00));
     }
-    .title{font-weight:1000;font-size:1.15rem}
-    .hint{color:var(--muted);margin-top:4px}
+    [data-theme="dark"] .head{
+      background:
+        radial-gradient(900px 220px at 10% 0%, rgba(0,113,227,.20), transparent 55%),
+        linear-gradient(180deg, rgba(0,113,227,.08), rgba(18,24,41,.00));
+    }
+
+    .titleRow{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    }
+    .title{
+      font-weight:1000;
+      font-size:1.15rem;
+      letter-spacing:-.01em;
+    }
+    .hint{
+      color:var(--muted);
+      margin-top:6px;
+      line-height:1.25;
+      font-size:.95rem;
+    }
 
     .form{
-      padding:16px 18px;
+      padding:16px 18px 18px;
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:12px;
     }
+
     label{
       display:block;
       color:var(--muted);
-      font-weight:1000;
-      font-size:.78rem;
+      font-weight:950;
+      font-size:.76rem;
       text-transform:uppercase;
-      letter-spacing:.08em;
+      letter-spacing:.10em;
       margin-bottom:6px;
     }
+
+    .field{
+      position:relative;
+    }
+
     input,select,textarea{
       width:100%;
-      border:1px solid var(--hair);
-      background:#fff;
+      border:1px solid var(--hair2);
+      background:rgba(255,255,255,.92);
+      color:var(--ink);
       padding:12px 14px;
       border-radius:16px;
       outline:none;
       box-shadow:0 10px 22px rgba(0,0,0,.06);
+      transition:border-color .12s var(--ease), box-shadow .12s var(--ease), transform .12s var(--ease);
     }
+    [data-theme="dark"] input,
+    [data-theme="dark"] select,
+    [data-theme="dark"] textarea{
+      background:rgba(10,14,24,.55);
+      box-shadow:0 10px 22px rgba(0,0,0,.32);
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:rgba(0,113,227,.45);
+      box-shadow:0 12px 26px rgba(0,113,227,.18);
+    }
+
+    .invalid input, .invalid select, .invalid textarea{
+      border-color:rgba(239,68,68,.65) !important;
+      box-shadow:0 12px 26px rgba(239,68,68,.18) !important;
+    }
+    .helper{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:.90rem;
+      line-height:1.25;
+    }
+    .errorLine{
+      margin-top:6px;
+      color:rgba(239,68,68,.95);
+      font-size:.90rem;
+      font-weight:900;
+      display:none;
+    }
+    .invalid .errorLine{display:block}
+
     textarea{min-height:110px;resize:vertical}
     .full{grid-column:1 / -1}
 
+    .quickRow{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .quick{
+      border:1px solid var(--hair2);
+      background:rgba(255,255,255,.80);
+      color:var(--ink);
+      border-radius:999px;
+      padding:8px 10px;
+      font-weight:950;
+      cursor:pointer;
+      box-shadow:var(--shadow3);
+      transition:transform .12s var(--ease);
+    }
+    [data-theme="dark"] .quick{background:rgba(10,14,24,.45)}
+    .quick:active{transform:scale(.985)}
+    .quick span{color:var(--muted); font-weight:900}
+
     .bot{
       padding:14px 18px;
-      border-top:1px solid rgba(0,0,0,.08);
-      display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;
-      background:rgba(245,245,247,.6);
+      border-top:1px solid var(--hair2);
+      display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:center;
+      background:rgba(245,245,247,.50);
     }
-    .btn{
-      border:1px solid rgba(0,0,0,.10);
-      background:#fff;
-      padding:12px 14px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:1000;
-      box-shadow:var(--shadow2);
-      display:flex;align-items:center;gap:10px;
-    }
+    [data-theme="dark"] .bot{background:rgba(10,14,24,.35)}
+
     .btn.primary{
-      border-color:rgba(0,113,227,.22);
-      background:linear-gradient(180deg,rgba(0,113,227,.12),#fff);
+      border-color:rgba(0,113,227,.30);
+      background:
+        radial-gradient(500px 140px at 15% 0%, rgba(0,113,227,.22), transparent 55%),
+        linear-gradient(180deg, rgba(0,113,227,.10), rgba(255,255,255,.70));
     }
+    [data-theme="dark"] .btn.primary{
+      background:
+        radial-gradient(500px 140px at 15% 0%, rgba(0,113,227,.22), transparent 55%),
+        linear-gradient(180deg, rgba(0,113,227,.12), rgba(18,24,41,.72));
+    }
+
+    /* Toast */
     .msg{
-      border:1px solid rgba(0,0,0,.08);
-      background:#fff;
+      display:flex; align-items:flex-start; gap:10px;
+      border:1px solid var(--hair2);
+      background:rgba(255,255,255,.85);
       border-radius:16px;
       padding:10px 12px;
-      box-shadow:0 12px 26px rgba(0,0,0,.10);
+      box-shadow:var(--shadow2);
       color:var(--muted);
-      max-width:660px;
+      max-width:680px;
+      line-height:1.25;
     }
+    [data-theme="dark"] .msg{background:rgba(10,14,24,.50)}
+    .msg b{color:var(--ink)}
     .ok{color:var(--green);font-weight:1000}
-    .warn{color:#f59e0b;font-weight:1000}
+    .warn{color:var(--amber);font-weight:1000}
+    .bad{color:var(--red);font-weight:1000}
+    .dot{
+      width:10px;height:10px;border-radius:999px;margin-top:4px;flex:0 0 auto;
+      background:rgba(110,110,115,.40);
+    }
+    .msg.ok .dot{background:rgba(34,197,94,.75)}
+    .msg.warn .dot{background:rgba(245,158,11,.85)}
+    .msg.bad .dot{background:rgba(239,68,68,.85)}
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{transition:none !important; animation:none !important}
+    }
 
     @media (max-width:760px){
       .form{grid-template-columns:1fr}
+      .rt{display:none}
+      .toggle{margin-left:0}
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div>
-        <div class="brand">Add Rx</div>
-        <div class="sub">Writes a new row into <b>DispenseQueue</b>.</div>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="top">
+    <div class="wrap" style="padding-bottom:10px">
+      <div class="topbar">
+        <div>
+          <div class="brand">Add Rx</div>
+          <div class="sub">Writes a new row into <b>DispenseQueue</b>. Draft auto-saves locally.</div>
+        </div>
+        <div class="rt" id="rt">—</div>
       </div>
-      <div class="sub" id="rt">—</div>
-    </div>
 
-    <div class="nav">
-      <a class="navbtn" href="index.html"><span class="pill">←</span> Back to Dispense</a>
-      <button class="navbtn" onclick="loadLookups()"><span class="pill">✨</span> Load suggestions</button>
-      <button class="navbtn" onclick="clearForm()"><span class="pill">🧹</span> Clear</button>
-    </div>
+      <div class="nav">
+        <a class="navbtn" href="index.html" id="backBtn"><span class="pill">←</span> Back to Dispense</a>
+        <button class="navbtn" id="loadBtn"><span class="pill">✨</span> Load suggestions</button>
+        <button class="navbtn" id="clearBtn"><span class="pill">🧹</span> Clear</button>
 
+        <div class="toggle">
+          <button class="navbtn" id="themeBtn" title="Toggle theme (T)">
+            <span class="pill">🌓</span> Theme
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap" aria-label="Add prescription">
     <div class="card">
       <div class="head">
-        <div class="title">New prescription</div>
-        <div class="hint">Timing supports AM/PM/HS/NIGHT or BID/TID/QID (or “AM,PM”). Due date defaults to today.</div>
+        <div class="titleRow">
+          <div>
+            <div class="title">New prescription</div>
+            <div class="hint">
+              Timing supports AM/PM/HS/NIGHT or BID/TID/QID (or “AM,PM”). Due date defaults to today.
+              <br><span class="helper">Shortcuts: <b>Ctrl/⌘ + Enter</b> submit • <b>T</b> theme • <b>Esc</b> clear</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="form">
-        <div>
-          <label>Resident (optional)</label>
-          <input id="resident" list="residentList" placeholder="Room 101 / Resident name" />
+      <div class="form" id="form">
+        <div class="field" id="fResident">
+          <label for="resident">Resident (optional)</label>
+          <input id="resident" list="residentList" placeholder="Room 101 / Resident name" autocomplete="off" />
           <datalist id="residentList"></datalist>
         </div>
 
-        <div>
-          <label>Entered by</label>
-          <input id="enteredBy" placeholder="Nurse / staff name" />
+        <div class="field" id="fEnteredBy">
+          <label for="enteredBy">Entered by</label>
+          <input id="enteredBy" placeholder="Nurse / staff name" autocomplete="name" />
+          <div class="helper">Saved locally so you don’t retype it.</div>
         </div>
 
-        <div class="full">
-          <label>Medication (required)</label>
-          <input id="medication" list="medList" placeholder="Drug + strength + form" />
+        <div class="field full" id="fMedication">
+          <label for="medication">Medication (required)</label>
+          <input id="medication" list="medList" placeholder="Drug + strength + form" autocomplete="off" />
           <datalist id="medList"></datalist>
+          <div class="errorLine">Medication is required.</div>
         </div>
 
-        <div class="full">
-          <label>Instructions</label>
+        <div class="field full" id="fInstructions">
+          <label for="instructions">Instructions</label>
           <textarea id="instructions" placeholder="Directions / notes"></textarea>
+
+          <div class="quickRow" aria-label="Quick insert">
+            <button class="quick" type="button" data-insert="Take with food.">🍽️ <span>Insert</span> With food</button>
+            <button class="quick" type="button" data-insert="Hold if SBP &lt; 100.">🩺 <span>Insert</span> Hold parameters</button>
+            <button class="quick" type="button" data-insert="Crush OK.">🧴 <span>Insert</span> Crush OK</button>
+            <button class="quick" type="button" data-insert="Do not crush.">🚫 <span>Insert</span> Do not crush</button>
+          </div>
         </div>
 
-        <div>
-          <label>Timing (required)</label>
+        <div class="field" id="fTiming">
+          <label for="timing">Timing (required)</label>
           <select id="timing">
             <option value="">— Select —</option>
             <option>AM</option>
@@ -200,44 +432,70 @@
             <option>AM,NOON,PM</option>
             <option>AM,NOON,PM,HS</option>
           </select>
+          <div class="errorLine">Timing is required.</div>
         </div>
 
-        <div>
-          <label>Due date</label>
+        <div class="field" id="fDueDate">
+          <label for="dueDate">Due date</label>
           <input id="dueDate" type="date" />
+          <div class="quickRow" style="margin-top:10px">
+            <button class="quick" type="button" data-date="today">📅 <span>Set</span> Today</button>
+            <button class="quick" type="button" data-date="tomorrow">⏭️ <span>Set</span> Tomorrow</button>
+            <button class="quick" type="button" data-date="week">🗓️ <span>Set</span> +7 days</button>
+          </div>
         </div>
       </div>
 
       <div class="bot">
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn primary" onclick="submitRx()"><span class="pill">➕</span> Add to Queue</button>
-          <button class="btn" onclick="clearForm()"><span class="pill">🧹</span> Clear</button>
+          <button class="btn primary" id="submitBtn"><span class="pill">➕</span> Add to Queue</button>
+          <button class="btn" id="clearBtn2"><span class="pill">🧹</span> Clear</button>
         </div>
-        <div class="msg" id="msg">Ready.</div>
+
+        <div class="msg" id="msg" role="status" aria-live="polite">
+          <span class="dot" aria-hidden="true"></span>
+          <div>Ready.</div>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 
 <script>
-/*** YOU MUST SET THESE ***/
+/*** CONFIG (keep same as your current backend) ***/
 const API_URL = "https://script.google.com/macros/s/AKfycbyoUMqa0N9B_6yTqA3bpKt4DfzUhamdvgkHw6TxaGYLUwWu72DLOnJ7sIEmNhoMSVCk/exec";
 const API_KEY = "CHANGE_ME_TO_SOMETHING_SECRET";
 
+/*** Utils ***/
+const $ = (id)=>document.getElementById(id);
 const pad = n => String(n).padStart(2,"0");
 const todayISO = () => {
   const d = new Date();
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 };
-document.getElementById("dueDate").value = todayISO();
-document.getElementById("rt").textContent = `Today: ${todayISO()}`;
+const nowStr = () => {
+  const d = new Date();
+  return `${todayISO()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+};
 
-function msg(text, cls=""){
-  const el = document.getElementById("msg");
+function setTheme(next){
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("ltc_theme", next);
+}
+function initTheme(){
+  const saved = localStorage.getItem("ltc_theme");
+  if (saved) return setTheme(saved);
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  setTheme(prefersDark ? "dark" : "light");
+}
+initTheme();
+
+function toast(text, cls=""){
+  const el = $("msg");
   el.className = "msg " + (cls||"");
-  el.textContent = text;
+  el.querySelector("div").textContent = text;
 }
 
-/*** JSONP ***/
+/*** JSONP (bypasses CORS) ***/
 function jsonp(url){
   return new Promise((resolve, reject) => {
     const cb = "cb_" + Math.random().toString(36).slice(2);
@@ -258,7 +516,7 @@ function jsonp(url){
 
     function cleanup(){
       clearTimeout(timeout);
-      delete window[cb];
+      try{ delete window[cb]; }catch(_){}
       script.remove();
     }
     document.head.appendChild(script);
@@ -269,63 +527,205 @@ function api(action, params={}){
   return jsonp(`${API_URL}?${q}`);
 }
 
-function clearForm(){
-  document.getElementById("resident").value = "";
-  document.getElementById("enteredBy").value = "";
-  document.getElementById("medication").value = "";
-  document.getElementById("instructions").value = "";
-  document.getElementById("timing").value = "";
-  document.getElementById("dueDate").value = todayISO();
-  msg("Ready.");
+/*** Draft persistence ***/
+const DRAFT_KEY = "ltc_addrx_draft_v1";
+const ENTERED_BY_KEY = "ltc_enteredBy_v1";
+
+function readDraft(){
+  try{ return JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); }catch(_){ return null; }
+}
+function saveDraft(){
+  const draft = {
+    resident: $("resident").value,
+    enteredBy: $("enteredBy").value,
+    medication: $("medication").value,
+    instructions: $("instructions").value,
+    timing: $("timing").value,
+    dueDate: $("dueDate").value
+  };
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+}
+function clearDraft(){
+  localStorage.removeItem(DRAFT_KEY);
+}
+function restoreDraft(){
+  const d = readDraft();
+  if (!d) return;
+  $("resident").value = d.resident || "";
+  $("enteredBy").value = d.enteredBy || $("enteredBy").value;
+  $("medication").value = d.medication || "";
+  $("instructions").value = d.instructions || "";
+  $("timing").value = d.timing || "";
+  $("dueDate").value = d.dueDate || $("dueDate").value;
 }
 
-async function loadLookups(){
+/*** Form validation UI ***/
+function setInvalid(fieldId, on){
+  const el = $(fieldId);
+  if (!el) return;
+  el.classList.toggle("invalid", !!on);
+}
+function validate(payload){
+  let ok = true;
+  setInvalid("fMedication", false);
+  setInvalid("fTiming", false);
+
+  if (!payload.medication){
+    setInvalid("fMedication", true);
+    ok = false;
+  }
+  if (!payload.timing){
+    setInvalid("fTiming", true);
+    ok = false;
+  }
+  return ok;
+}
+
+function clearForm({keepEnteredBy=true}={}){
+  $("resident").value = "";
+  if (!keepEnteredBy) $("enteredBy").value = "";
+  $("medication").value = "";
+  $("instructions").value = "";
+  $("timing").value = "";
+  $("dueDate").value = todayISO();
+  setInvalid("fMedication", false);
+  setInvalid("fTiming", false);
+  toast("Ready.");
+  saveDraft();
+}
+
+async function loadLookups({silent=false}={}){
   try{
-    msg("Loading suggestions…");
+    if (!silent) toast("Loading suggestions…");
     const res = await api("lookups", {});
     if (!res.ok) throw new Error(res.message || "Lookup failed");
 
     const residents = res.data?.residents || [];
     const meds = res.data?.medications || [];
 
-    document.getElementById("residentList").innerHTML =
-      residents.map(x=>`<option value="${String(x).replaceAll('"','&quot;')}"></option>`).join("");
+    // Escape quotes for datalist options
+    const opt = (x)=>`<option value="${String(x).replaceAll("&","&amp;").replaceAll('"',"&quot;")}"></option>`;
 
-    document.getElementById("medList").innerHTML =
-      meds.map(x=>`<option value="${String(x).replaceAll('"','&quot;')}"></option>`).join("");
+    $("residentList").innerHTML = residents.map(opt).join("");
+    $("medList").innerHTML = meds.map(opt).join("");
 
-    msg(`Loaded ${residents.length} residents + ${meds.length} medications.`, "ok");
+    toast(`Loaded ${residents.length} residents + ${meds.length} medications.`, "ok");
   } catch(e){
-    msg("Error: " + e.message, "warn");
+    toast("Error: " + e.message, "warn");
   }
 }
 
 async function submitRx(){
   const payload = {
-    resident: document.getElementById("resident").value.trim(),
-    enteredBy: document.getElementById("enteredBy").value.trim(),
-    medication: document.getElementById("medication").value.trim(),
-    instructions: document.getElementById("instructions").value.trim(),
-    timing: document.getElementById("timing").value.trim(),
-    dueDate: document.getElementById("dueDate").value.trim()
+    resident: $("resident").value.trim(),
+    enteredBy: $("enteredBy").value.trim(),
+    medication: $("medication").value.trim(),
+    instructions: $("instructions").value.trim(),
+    timing: $("timing").value.trim(),
+    dueDate: $("dueDate").value.trim()
   };
 
-  if (!payload.medication) return msg("Medication is required.", "warn");
-  if (!payload.timing) return msg("Timing is required.", "warn");
+  if (!payload.dueDate) payload.dueDate = todayISO();
+
+  // persist enteredBy
+  localStorage.setItem(ENTERED_BY_KEY, payload.enteredBy || "");
+
+  if (!validate(payload)){
+    toast("Fix required fields (highlighted).", "warn");
+    return;
+  }
 
   try{
-    msg("Saving…");
+    toast("Saving…");
     const res = await api("addRx", payload);
     if (!res.ok) throw new Error(res.message || "Save failed");
-    msg(res.message || "Added.", "ok");
-    clearForm();
+    toast(res.message || "Added.", "ok");
+
+    clearDraft();
+    clearForm({keepEnteredBy:true});
+    $("medication").focus();
   } catch(e){
-    msg("Error: " + e.message, "warn");
+    toast("Error: " + e.message, "warn");
   }
 }
 
-// Auto load suggestions once (optional)
-loadLookups();
+/*** Wire UI ***/
+function init(){
+  $("dueDate").value = todayISO();
+  $("rt").textContent = `Now: ${nowStr()}`;
+  setInterval(()=> $("rt").textContent = `Now: ${nowStr()}`, 1000);
+
+  // restore enteredBy default
+  const eb = localStorage.getItem(ENTERED_BY_KEY);
+  if (eb && !$("enteredBy").value) $("enteredBy").value = eb;
+
+  // restore draft
+  restoreDraft();
+
+  // auto-save draft on input
+  ["resident","enteredBy","medication","instructions","timing","dueDate"].forEach(id=>{
+    $(id).addEventListener("input", saveDraft);
+    $(id).addEventListener("change", saveDraft);
+  });
+
+  // quick insert buttons
+  document.querySelectorAll("[data-insert]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const text = b.getAttribute("data-insert") || "";
+      const t = $("instructions");
+      const before = t.value.trim();
+      t.value = before ? (before + (before.endsWith(".") ? " " : ". ") + text) : text;
+      t.focus();
+      saveDraft();
+    });
+  });
+
+  // date quick set
+  document.querySelectorAll("[data-date]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const mode = b.getAttribute("data-date");
+      const d = new Date();
+      if (mode==="tomorrow") d.setDate(d.getDate()+1);
+      if (mode==="week") d.setDate(d.getDate()+7);
+      $("dueDate").value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+      saveDraft();
+      toast("Due date updated.", "ok");
+    });
+  });
+
+  $("loadBtn").addEventListener("click", ()=>loadLookups());
+  $("clearBtn").addEventListener("click", ()=>{ clearForm({keepEnteredBy:true}); });
+  $("clearBtn2").addEventListener("click", ()=>{ clearForm({keepEnteredBy:true}); });
+  $("submitBtn").addEventListener("click", submitRx);
+
+  $("themeBtn").addEventListener("click", ()=>{
+    const cur = document.documentElement.getAttribute("data-theme") || "light";
+    setTheme(cur === "dark" ? "light" : "dark");
+  });
+
+  // keyboard shortcuts
+  document.addEventListener("keydown",(e)=>{
+    const isMac = navigator.platform.toLowerCase().includes("mac");
+    const mod = isMac ? e.metaKey : e.ctrlKey;
+
+    if (mod && e.key === "Enter"){ e.preventDefault(); submitRx(); }
+    if (e.key === "Escape"){ e.preventDefault(); clearForm({keepEnteredBy:true}); }
+    if (e.key.toLowerCase() === "t" && !e.ctrlKey && !e.metaKey && !e.altKey){
+      // avoid toggling while typing in inputs
+      const tag = (document.activeElement?.tagName || "").toLowerCase();
+      if (tag !== "input" && tag !== "textarea" && tag !== "select"){
+        const cur = document.documentElement.getAttribute("data-theme") || "light";
+        setTheme(cur === "dark" ? "light" : "dark");
+      }
+    }
+  });
+
+  // cache lookups in localStorage for speed
+  loadLookups({silent:true});
+  toast("Ready.");
+}
+
+init();
 </script>
 </body>
 </html>
